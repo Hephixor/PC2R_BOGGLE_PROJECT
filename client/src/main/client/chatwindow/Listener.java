@@ -17,134 +17,145 @@ import main.messages.Status;
 
 public class Listener implements Runnable{
 
-    private static final String HASCONNECTED = "has connected";
+	private static final String HASCONNECTED = "has connected";
 
-    private static String picture;
-    private Socket socket;
-    public String hostname;
-    public int port;
-    public static String username;
-    public ChatController controller;
-    private static ObjectOutputStream oos;
-    private InputStream is;
-    private ObjectInputStream input;
-    private OutputStream outputStream;
-    Logger logger = LoggerFactory.getLogger(Listener.class);
+	private static String picture;
+	private Socket socket;
+	public String hostname;
+	public int port;
+	public static String username;
+	public ChatController controller;
+	private static ObjectOutputStream oos;
+	private InputStream is;
+	private ObjectInputStream input;
+	private OutputStream outputStream;
+	Logger logger = LoggerFactory.getLogger(Listener.class);
 
-    public Listener(String hostname, int port, String username, String picture, ChatController controller) {
-        this.hostname = hostname;
-        this.port = port;
-        Listener.username = username;
-        Listener.picture = picture;
-        this.controller = controller;
-    }
+	public Listener(String hostname, int port, String username, String picture, ChatController controller) {
+		this.hostname = hostname;
+		this.port = port;
+		Listener.username = username;
+		Listener.picture = picture;
+		this.controller = controller;
+	}
 
-    public void run() {
-        try {
-            socket = new Socket(hostname, port);
-            LoginController.getInstance().showScene();
-            outputStream = socket.getOutputStream();
-            oos = new ObjectOutputStream(outputStream);
-            is = socket.getInputStream();
-            input = new ObjectInputStream(is);
-        } catch (IOException e) {
-            LoginController.getInstance().showErrorDialog("Could not connect to server");
-            logger.error("Could not Connect");
-        }
-        logger.info("Connection accepted " + socket.getInetAddress() + ":" + socket.getPort());
+	public void run() {
+		//System.out.println("Listener thread strated.");
+		try {
+			socket = new Socket(hostname, port);
+			sendRaw("CONNEXION/"+username+"/");
+			LoginController.getInstance().showScene();
+			outputStream = socket.getOutputStream();
+			oos = new ObjectOutputStream(outputStream);
+			is = socket.getInputStream();
+			input = new ObjectInputStream(is);
+			logger.info("Connection accepted " + socket.getInetAddress() + ":" + socket.getPort());
+			try {
+				connect();           
+				logger.info("Sockets in and out ready!");
+				while (socket.isConnected()) {
+					Message message = null;
+					message = (Message) input.readObject();
 
-        try {
-            connect();
-            logger.info("Sockets in and out ready!");
-            while (socket.isConnected()) {
-                Message message = null;
-                message = (Message) input.readObject();
+					if (message != null) {
+						logger.debug("Message received:" + message.getMsg() + " MessageType:" + message.getType() + "Name:" + message.getName());
+						switch (message.getType()) {
+						case USER:
+							controller.addToChat(message);
+							break;
+						case VOICE:
+							controller.addToChat(message);
+							break;
+						case NOTIFICATION:
+							controller.newUserNotification(message);
+							break;
+						case SERVER:
+							controller.addAsServer(message);
+							break;
+						case CONNECTED:
+							controller.setUserList(message);
+							break;
+						case DISCONNECTED:
+							controller.setUserList(message);
+							break;
+						case STATUS:
+							controller.setUserList(message);
+							break;
+						case MATRIX:
+							controller.setMatrix(message);
+						}
+					}
+				}
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+				controller.logoutScene();
+			}
+		} catch (IOException e) {
+			LoginController.getInstance().showErrorDialog("Could not connect to server","Please check for firewall issues and check if the server is running.");
+			logger.error("Could not Connect");
+		}
 
-                if (message != null) {
-                    logger.debug("Message received:" + message.getMsg() + " MessageType:" + message.getType() + "Name:" + message.getName());
-                    switch (message.getType()) {
-                        case USER:
-                            controller.addToChat(message);
-                            break;
-                        case VOICE:
-                            controller.addToChat(message);
-                            break;
-                        case NOTIFICATION:
-                            controller.newUserNotification(message);
-                            break;
-                        case SERVER:
-                            controller.addAsServer(message);
-                            break;
-                        case CONNECTED:
-                            controller.setUserList(message);
-                            break;
-                        case DISCONNECTED:
-                            controller.setUserList(message);
-                            break;
-                        case STATUS:
-                            controller.setUserList(message);
-                            break;
-                    }
-                }
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            controller.logoutScene();
-        }
-    }
 
-    /* This method is used for sending a normal Message
-     * @param msg - The message which the user generates
-     */
-    public static void send(String msg) throws IOException {
-        Message createMessage = new Message();
-        createMessage.setName(username);
-        createMessage.setType(MessageType.USER);
-        createMessage.setStatus(Status.AWAY);
-        createMessage.setMsg(msg);
-        createMessage.setPicture(picture);
-        System.out.println("Message from " + createMessage.getName()+ "(msctype:"+createMessage.getType().toString()+") :: "+ createMessage.getMsg());
-        oos.writeObject(createMessage);
-        oos.flush();
-    }
+	}
 
-    /* This method is used for sending a voice Message
- * @param msg - The message which the user generates
- */
-    public static void sendVoiceMessage(byte[] audio) throws IOException {
-        Message createMessage = new Message();
-        createMessage.setName(username);
-        createMessage.setType(MessageType.VOICE);
-        createMessage.setStatus(Status.AWAY);
-        createMessage.setVoiceMsg(audio);
-        createMessage.setPicture(picture);
-        System.out.println("Message from " + createMessage.getName()+ "(msctype:"+createMessage.getType().toString()+") :: "+ createMessage.getVoiceMsg());
 
-        oos.writeObject(createMessage);
-        oos.flush();
-    }
+	public static void sendRaw(String msg) throws IOException {
+		System.out.println(msg);
+//		oos.writeObject(msg);
+//		oos.flush();
+	}
+	/* This method is used for sending a normal Message
+	 * @param msg - The message which the user generates
+	 */
+	public static void send(String msg) throws IOException {
+		Message createMessage = new Message();
+		createMessage.setName(username);
+		createMessage.setType(MessageType.USER);
+		createMessage.setStatus(Status.AWAY);
+		createMessage.setMsg(msg);
+		createMessage.setPicture(picture);
+		System.out.println("Message from " + createMessage.getName()+ "(msctype:"+createMessage.getType().toString()+") :: "+ createMessage.getMsg());
+		oos.writeObject(createMessage);
+		oos.flush();
+	}
 
-    /* This method is used for sending a normal Message
- * @param msg - The message which the user generates
- */
-    public static void sendStatusUpdate(Status status) throws IOException {
-        Message createMessage = new Message();
-        createMessage.setName(username);
-        createMessage.setType(MessageType.STATUS);
-        createMessage.setStatus(status);
-        createMessage.setPicture(picture);
-        oos.writeObject(createMessage);
-        oos.flush();
-    }
+	/* This method is used for sending a voice Message
+	 * @param msg - The message which the user generates
+	 */
+	public static void sendVoiceMessage(byte[] audio) throws IOException {
+		Message createMessage = new Message();
+		createMessage.setName(username);
+		createMessage.setType(MessageType.VOICE);
+		createMessage.setStatus(Status.AWAY);
+		createMessage.setVoiceMsg(audio);
+		createMessage.setPicture(picture);
+		System.out.println("Message from " + createMessage.getName()+ "(msctype:"+createMessage.getType().toString()+") :: "+ createMessage.getVoiceMsg());
 
-    /* This method is used to send a connecting message */
-    public static void connect() throws IOException {
-        Message createMessage = new Message();
-        createMessage.setName(username);
-        createMessage.setType(MessageType.CONNECTED);
-        createMessage.setMsg(HASCONNECTED);
-        createMessage.setPicture(picture);
-        oos.writeObject(createMessage);
-    }
+		oos.writeObject(createMessage);
+		oos.flush();
+	}
+
+	/* This method is used for sending a normal Message
+	 * @param msg - The message which the user generates
+	 */
+	public static void sendStatusUpdate(Status status) throws IOException {
+		Message createMessage = new Message();
+		createMessage.setName(username);
+		createMessage.setType(MessageType.STATUS);
+		createMessage.setStatus(status);
+		createMessage.setPicture(picture);
+		oos.writeObject(createMessage);
+		oos.flush();
+	}
+
+	/* This method is used to send a connecting message */
+	public static void connect() throws IOException {
+		Message createMessage = new Message();
+		createMessage.setName(username);
+		createMessage.setType(MessageType.CONNECTED);
+		createMessage.setMsg(HASCONNECTED);
+		createMessage.setPicture(picture);
+		oos.writeObject(createMessage);
+	}
 
 }
