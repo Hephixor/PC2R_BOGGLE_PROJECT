@@ -9,7 +9,7 @@
 			<accessrule kind="accessible" pattern="javafx/**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/jars/slf4j-api-1.7.25.jar"/>
-	<classpathentry kind="lib" path="/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/jars/slf4j-simple-1.7.25.jar"/>
+	<classpathentry kind="lib" path="/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/jars/slf4j-api-1.7.25.jar"/>
+	<classpathentry kind="lib" path="/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/jars/slf4j-simple-1.7.25.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
