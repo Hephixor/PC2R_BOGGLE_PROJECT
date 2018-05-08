@@ -40,10 +40,14 @@ public class MainLauncher extends Application {
         primaryStage.setTitle("Boggle is life");
         File img = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/plug.png");
         primaryStage.getIcons().add(new Image(img.toURI().toString()));
-        Scene mainScene = new Scene(root, 350, 420);
+        Scene mainScene = new Scene(root, 450, 650);
         mainScene.setRoot(root);
-        primaryStage.setResizable(false);
+        
+        primaryStage.setResizable(true);
         primaryStage.setScene(mainScene);
+        primaryStage.sizeToScene();
+        primaryStage.setMinWidth(primaryStage.getWidth());
+        primaryStage.setMinHeight(primaryStage.getHeight());
         primaryStage.show();
         primaryStage.setOnCloseRequest(e -> Platform.exit());
     }

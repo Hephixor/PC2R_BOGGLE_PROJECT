@@ -4,8 +4,8 @@ package main.client.chatwindow;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
@@ -26,6 +26,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -77,8 +78,8 @@ public class ChatController implements Initializable {
 	@FXML ImageView microphoneImageView;
 	@FXML Button letter1,letter2,letter3,letter4,letter5,letter6,letter7,letter8,letter9,letter10,letter11,letter12,letter13,letter14,letter15,letter16;
 	@FXML Label foundWords;
-	
-	
+
+
 	Word word = new Word();
 
 	File imgMicrophoneActive = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/microphone-active.png");
@@ -95,8 +96,13 @@ public class ChatController implements Initializable {
 	public void sendButtonAction() throws IOException {
 		String msg = messageBox.getText();
 		if (!messageBox.getText().isEmpty()) {
-			Listener.send(msg);
-			messageBox.clear();
+			try {
+				Listener.send(msg);
+				messageBox.clear();
+			}catch(SocketException e) {
+				showErrorDialog("Connection Error", "Your client has been disconnected !");
+
+			}
 		}
 	}
 
@@ -108,27 +114,27 @@ public class ChatController implements Initializable {
 		StringBuilder builder = new StringBuilder(word.getLetters().size());
 		StringBuilder builderPos = new StringBuilder(word.getTrail().size());
 		word.addLetter(letter,pos);  
-		
-	    for(Character ch: word.getLetters())
-	    {
-	        builder.append(ch);
-	    }
-	    
+
+		for(Character ch: word.getLetters())
+		{
+			builder.append(ch);
+		}
+
 		currentWord.setText(builder.toString());
 	}
-	
+
 	public void removeLetterAction() {
 		System.out.println("Removing letter");
 		word.removeLetter();
 		StringBuilder builder = new StringBuilder(word.getLetters().size());	
-	    for(Character ch: word.getLetters())
-	    {
-	        builder.append(ch);
-	    }	
-	    
+		for(Character ch: word.getLetters())
+		{
+			builder.append(ch);
+		}	
+
 		currentWord.setText( builder.toString());
 	}
-	
+
 	public void resetBoardAction() {
 		System.out.println("Reset board");
 		word.resetBoard();
@@ -136,23 +142,30 @@ public class ChatController implements Initializable {
 	}
 
 	public void sendWordAction() throws IOException {
-		StringBuilder builder = new StringBuilder(word.getLetters().size());
-		StringBuilder builderPos = new StringBuilder(word.getLetters().size());
-		
-		for(Character ch: word.getLetters())
-	    {
-	        builder.append(ch);
-	    }
-		
-	    for(int[] p: word.getTrail())
-	    {
-	        builderPos.append(p[0]);
-	        builderPos.append(p[1]);
-	    }
-	    
-	    foundWords.setText(foundWords.getText()+","+builder.toString());
-	    
-		Listener.sendRaw("TROUVE/"+builder.toString()+"/"+builderPos.toString());
+		if(word.getLetters().size()!=0) {
+			StringBuilder builder = new StringBuilder(word.getLetters().size());
+			StringBuilder builderPos = new StringBuilder(word.getLetters().size());
+
+			for(Character ch: word.getLetters())
+			{
+				builder.append(ch);
+			}
+
+			for(int[] p: word.getTrail())
+			{
+				builderPos.append(p[0]);
+				builderPos.append(p[1]);
+			}
+			
+			if(foundWords.getText()!="")foundWords.setText(foundWords.getText()+","+builder.toString());
+			
+			else foundWords.setText(builder.toString());
+			
+
+			Listener.sendRaw("TROUVE/"+builder.toString()+"/"+builderPos.toString());
+			word.resetBoard();
+			currentWord.setText("");
+		}
 	}
 
 	public void recordVoiceMessage() throws IOException {
@@ -396,33 +409,44 @@ public class ChatController implements Initializable {
 	}
 
 	public void logoutScene() {
-		        Platform.runLater(() -> {
-		        	URL fxmll = null;
-		        	try {
-		        		fxmll = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/views/LoginView.fxml").toURI().toURL();
-					} catch (MalformedURLException e1) {
-						e1.printStackTrace();
-					}    
-		        	
-		            FXMLLoader fmxlLoader = new FXMLLoader(fxmll);
-		            Parent window = null;
-		            
-		            try {
-		                window = (Pane) fmxlLoader.load();
-		            } catch (IOException e) {
-		                e.printStackTrace();
-		            }
-		            Stage stage = MainLauncher.getPrimaryStage();
-		            Scene scene = new Scene(window);
-		            stage.setMaxWidth(350);
-		            stage.setMaxHeight(420);
-		            stage.setResizable(false);
-		            stage.setScene(scene);
-		            stage.centerOnScreen();
-		        });
+		Platform.runLater(() -> {
+			URL fxmll = null;
+			try {
+				fxmll = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/views/LoginView.fxml").toURI().toURL();
+			} catch (MalformedURLException e1) {
+				e1.printStackTrace();
+			}    
+
+			FXMLLoader fmxlLoader = new FXMLLoader(fxmll);
+			Parent window = null;
+
+			try {
+				window = (Pane) fmxlLoader.load();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			Stage stage = MainLauncher.getPrimaryStage();
+			Scene scene = new Scene(window);
+			stage.setMaxWidth(350);
+			stage.setMaxHeight(420);
+			stage.setResizable(false);
+			stage.setScene(scene);
+			stage.centerOnScreen();
+		});
 	}
 
 	public void setMatrix(Message message) {
 		message.getMsg();
+	}
+
+	public void showErrorDialog(String message, String content) {
+		Platform.runLater(()-> {
+			Alert alert = new Alert(Alert.AlertType.WARNING);
+			alert.setTitle("Warning!");
+			alert.setHeaderText(message);
+			alert.setContentText(content);
+			alert.showAndWait();
+		});
+
 	}
 }

@@ -7,10 +7,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import main.client.login.LoginController;
 import main.messages.Message;
 import main.messages.MessageType;
@@ -41,7 +44,6 @@ public class Listener implements Runnable{
 	}
 
 	public void run() {
-		//System.out.println("Listener thread strated.");
 		try {
 			socket = new Socket(hostname, port);
 			LoginController.getInstance().showScene();
@@ -56,10 +58,10 @@ public class Listener implements Runnable{
 				while (socket.isConnected()) {
 					Message message = null;
 					try {
-					message = (Message) input.readObject();
+						message = (Message) input.readObject();
 					}
 					catch(EOFException e) {
-						
+
 					}
 
 					if (message != null) {
@@ -93,8 +95,10 @@ public class Listener implements Runnable{
 				}
 			} catch (IOException | ClassNotFoundException e) {
 				e.printStackTrace();
+				showErrorDialog("Connection Error", "Your client has been disconnected !");
 				controller.logoutScene();
 			}
+
 		} catch (IOException e) {
 			LoginController.getInstance().showErrorDialog("Could not connect to server","Please check for firewall issues and check if the server is running.");
 			logger.error("Could not Connect");
@@ -106,10 +110,10 @@ public class Listener implements Runnable{
 
 	public static void sendRaw(String msg) throws IOException {
 		System.out.println(msg);
-//		oos.writeObject(msg);
-//		oos.flush();
-//		oos.writeObject(msg);
-//		oos.flush();
+		//		oos.writeObject(msg);
+		//		oos.flush();
+		//		oos.writeObject(msg);
+		//		oos.flush();
 	}
 	/* This method is used for sending a normal Message
 	 * @param msg - The message which the user generates
@@ -121,7 +125,7 @@ public class Listener implements Runnable{
 		createMessage.setStatus(Status.AWAY);
 		createMessage.setMsg(msg);
 		createMessage.setPicture(picture);
-		System.out.println("ENVOI/" + createMessage.getName()+"/"+ createMessage.getMsg());
+		sendRaw("ENVOI/" + createMessage.getName()+"/"+ createMessage.getMsg());
 		oos.writeObject(createMessage);
 		oos.flush();
 	}
@@ -136,8 +140,7 @@ public class Listener implements Runnable{
 		createMessage.setStatus(Status.AWAY);
 		createMessage.setVoiceMsg(audio);
 		createMessage.setPicture(picture);
-		System.out.println("ENVOIV/" + createMessage.getName()+"/"+ createMessage.getVoiceMsg());
-
+		sendRaw("ENVOIV/" + createMessage.getName()+"/"+ createMessage.getVoiceMsg());
 		oos.writeObject(createMessage);
 		oos.flush();
 	}
@@ -153,6 +156,7 @@ public class Listener implements Runnable{
 		createMessage.setPicture(picture);
 		oos.writeObject(createMessage);
 		oos.flush();
+		sendRaw("STATUS/"+username+"/"+status);
 	}
 
 	/* This method is used to send a connecting message */
@@ -164,6 +168,17 @@ public class Listener implements Runnable{
 		createMessage.setPicture(picture);
 		oos.writeObject(createMessage);
 		sendRaw("CONNEXION/"+username+"/");
+	}
+
+	public void showErrorDialog(String message, String content) {
+		Platform.runLater(()-> {
+			Alert alert = new Alert(Alert.AlertType.WARNING);
+			alert.setTitle("Warning!");
+			alert.setHeaderText(message);
+			alert.setContentText(content);
+			alert.showAndWait();
+		});
+
 	}
 
 }

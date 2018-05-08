@@ -30,13 +30,13 @@
          </rowConstraints>
          <children>
             <Button id="connectBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#loginButtonAction" stylesheets="@../styles/Login.css" text="Connect" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-            <Label text="Hostname: " textAlignment="CENTER" textFill="#3498DB" GridPane.rowIndex="5" />
+            <Label text="Hostname: " alignment="CENTER" textAlignment="CENTER" textFill="#3498DB" GridPane.rowIndex="5" />
             <TextField fx:id="hostnameTextfield" prefWidth="188.0" text="localhost" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <Label text="Port: " textFill="#3498DB" GridPane.rowIndex="6" />
+            <Label text="Port: " alignment="CENTER" textFill="#3498DB" GridPane.rowIndex="6" />
             <TextField fx:id="portTextfield" prefHeight="13.0" prefWidth="149.0" text="8080" GridPane.columnIndex="1" GridPane.rowIndex="6" />
             <Label text="Username: " textFill="#3498DB" GridPane.rowIndex="3" />
             <TextField fx:id="usernameTextfield" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Label prefHeight="22.0" prefWidth="73.0" text="Game Server" textFill="#3498DB" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label prefHeight="22.0" prefWidth="90.0" text="Game Server" textFill="#3498DB" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <StackPane GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
                   <ImageView fx:id="Defaultview" fitHeight="93" fitWidth="93" pickOnBounds="true" preserveRatio="true">
@@ -60,8 +60,8 @@
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="Default" />
-                     <String fx:value="Dominic" />
-                     <String fx:value="Sarah" />
+                     <!-- <String fx:value="Dominic" />
+                     <String fx:value="Sarah" /> -->
                   </FXCollections>
                </items>
                     </ChoiceBox>
