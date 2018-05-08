@@ -1,5 +1,6 @@
 package main.client.chatwindow;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -43,7 +44,6 @@ public class Listener implements Runnable{
 		//System.out.println("Listener thread strated.");
 		try {
 			socket = new Socket(hostname, port);
-			sendRaw("CONNEXION/"+username+"/");
 			LoginController.getInstance().showScene();
 			outputStream = socket.getOutputStream();
 			oos = new ObjectOutputStream(outputStream);
@@ -55,7 +55,12 @@ public class Listener implements Runnable{
 				logger.info("Sockets in and out ready!");
 				while (socket.isConnected()) {
 					Message message = null;
+					try {
 					message = (Message) input.readObject();
+					}
+					catch(EOFException e) {
+						
+					}
 
 					if (message != null) {
 						logger.debug("Message received:" + message.getMsg() + " MessageType:" + message.getType() + "Name:" + message.getName());
@@ -103,6 +108,8 @@ public class Listener implements Runnable{
 		System.out.println(msg);
 //		oos.writeObject(msg);
 //		oos.flush();
+//		oos.writeObject(msg);
+//		oos.flush();
 	}
 	/* This method is used for sending a normal Message
 	 * @param msg - The message which the user generates
@@ -114,7 +121,7 @@ public class Listener implements Runnable{
 		createMessage.setStatus(Status.AWAY);
 		createMessage.setMsg(msg);
 		createMessage.setPicture(picture);
-		System.out.println("Message from " + createMessage.getName()+ "(msctype:"+createMessage.getType().toString()+") :: "+ createMessage.getMsg());
+		System.out.println("ENVOI/" + createMessage.getName()+"/"+ createMessage.getMsg());
 		oos.writeObject(createMessage);
 		oos.flush();
 	}
@@ -129,7 +136,7 @@ public class Listener implements Runnable{
 		createMessage.setStatus(Status.AWAY);
 		createMessage.setVoiceMsg(audio);
 		createMessage.setPicture(picture);
-		System.out.println("Message from " + createMessage.getName()+ "(msctype:"+createMessage.getType().toString()+") :: "+ createMessage.getVoiceMsg());
+		System.out.println("ENVOIV/" + createMessage.getName()+"/"+ createMessage.getVoiceMsg());
 
 		oos.writeObject(createMessage);
 		oos.flush();
@@ -156,6 +163,7 @@ public class Listener implements Runnable{
 		createMessage.setMsg(HASCONNECTED);
 		createMessage.setPicture(picture);
 		oos.writeObject(createMessage);
+		sendRaw("CONNEXION/"+username+"/");
 	}
 
 }

@@ -29,7 +29,7 @@ public class MainLauncher extends Application {
 		vbox.setSpacing(8);
 
 		Text title = new Text("Data");
-		title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+		title.setFont(Font.font("SansSerif Regular", FontWeight.BOLD, 14));
 		vbox.getChildren().add(title);
     	
         primaryStageObj = primaryStage;
@@ -38,8 +38,8 @@ public class MainLauncher extends Application {
         
         primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setTitle("Boggle is life");
-//        File img = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/plug.png");
-//        primaryStage.getIcons().add(new Image(img.toURI().toString()));
+        File img = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/plug.png");
+        primaryStage.getIcons().add(new Image(img.toURI().toString()));
         Scene mainScene = new Scene(root, 350, 420);
         mainScene.setRoot(root);
         primaryStage.setResizable(false);

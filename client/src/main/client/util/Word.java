@@ -10,18 +10,22 @@ import main.exceptions.FullWordException;
 
 public class Word {
 	private ArrayList<Character> letters;
+	private ArrayList<int[]> trail; 
 
 	public Word() {
 		this.letters = new ArrayList<Character>();
+		this.trail = new ArrayList<int[]>();
 	}
 
-	public void addLetter(char letter) {
+	public void addLetter(char letter, String pos) {
 		try {
 			if(letters.size()==16) {
 				throw new FullWordException("Error word is the maximum length");
 			}
 			else {
+			int[] tmp = {Character.getNumericValue(pos.charAt(0)),Character.getNumericValue(pos.charAt(1))};
 			letters.add(letter);
+			trail.add(tmp);
 			}
 		} catch (FullWordException e) {
 			showErrorDialog("Invalid Move !", "Your word has reached the maximul length.");
@@ -35,6 +39,7 @@ public class Word {
 			}
 			else {
 			letters.remove(letters.size()-1);
+			trail.remove(trail.size()-1);
 			}
 		} catch (EmptyWordException e) {
 			showErrorDialog("Invalid Move !", "Your word is empty");
@@ -43,10 +48,15 @@ public class Word {
 	
 	public void resetBoard() {
 		letters.removeAll(getLetters());
+		trail.removeAll(getTrail());
 	}
 	
 	public ArrayList<Character> getLetters(){
 		return letters;
+	}
+	
+	public ArrayList<int[]> getTrail(){
+		return trail;
 	}
 
 		/* This displays an alert message to the user */

@@ -6,6 +6,10 @@
     -fx-opacity: 0.6;
 }
 
+#currentWord{
+  -fx-font-family: "SansSerif Regular";
+}
+
 #dark-blue {
     -fx-background-color:
         #090a0c,

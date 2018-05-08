@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -74,9 +76,10 @@ public class ChatController implements Initializable {
 	@FXML ComboBox statusComboBox;
 	@FXML ImageView microphoneImageView;
 	@FXML Button letter1,letter2,letter3,letter4,letter5,letter6,letter7,letter8,letter9,letter10,letter11,letter12,letter13,letter14,letter15,letter16;
-
+	@FXML Label foundWords;
+	
+	
 	Word word = new Word();
-
 
 	File imgMicrophoneActive = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/microphone-active.png");
 	File imgMicrophone = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/microphone.png");
@@ -97,27 +100,27 @@ public class ChatController implements Initializable {
 		}
 	}
 
-	public void addLetterAction(ActionEvent event){ 	
+	public void addLetterAction(ActionEvent event){
+		Node node = (Node) event.getSource();
+		String pos = (String) node.getUserData();
 		Button pressed = (Button) event.getSource();
 		char letter = pressed.getText().charAt(0);
 		StringBuilder builder = new StringBuilder(word.getLetters().size());
-		
-		word.addLetter(letter);  
+		StringBuilder builderPos = new StringBuilder(word.getTrail().size());
+		word.addLetter(letter,pos);  
 		
 	    for(Character ch: word.getLetters())
 	    {
 	        builder.append(ch);
-	    }	
+	    }
 	    
 		currentWord.setText(builder.toString());
 	}
 	
 	public void removeLetterAction() {
 		System.out.println("Removing letter");
-		StringBuilder builder = new StringBuilder(word.getLetters().size());
-		
 		word.removeLetter();
-		
+		StringBuilder builder = new StringBuilder(word.getLetters().size());	
 	    for(Character ch: word.getLetters())
 	    {
 	        builder.append(ch);
@@ -134,11 +137,22 @@ public class ChatController implements Initializable {
 
 	public void sendWordAction() throws IOException {
 		StringBuilder builder = new StringBuilder(word.getLetters().size());
+		StringBuilder builderPos = new StringBuilder(word.getLetters().size());
+		
 		for(Character ch: word.getLetters())
 	    {
 	        builder.append(ch);
-	    }	
-		Listener.sendRaw("TROUVE/"+builder.toString());
+	    }
+		
+	    for(int[] p: word.getTrail())
+	    {
+	        builderPos.append(p[0]);
+	        builderPos.append(p[1]);
+	    }
+	    
+	    foundWords.setText(foundWords.getText()+","+builder.toString());
+	    
+		Listener.sendRaw("TROUVE/"+builder.toString()+"/"+builderPos.toString());
 	}
 
 	public void recordVoiceMessage() throws IOException {
@@ -163,13 +177,15 @@ public class ChatController implements Initializable {
 		Task<HBox> othersMessages = new Task<HBox>() {
 			@Override
 			public HBox call() throws Exception {
-				Image image = new Image(getClass().getClassLoader().getResource("images/" + msg.getPicture() + ".png").toString());
+				File pic = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/" + msg.getPicture() + ".png");
+				Image image = new Image(pic.toURI().toString());
 				ImageView profileImage = new ImageView(image);
 				profileImage.setFitHeight(32);
 				profileImage.setFitWidth(32);
 				BubbledLabel bl6 = new BubbledLabel();
 				if (msg.getType() == MessageType.VOICE){
-					ImageView imageview = new ImageView(new Image(getClass().getClassLoader().getResource("images/sound.png").toString()));
+					File soundpic = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/sound.png");
+					ImageView imageview = new ImageView(new Image(soundpic.toURI().toString()));
 					bl6.setGraphic(imageview);
 					bl6.setText("Sent a voice message!");
 					VoicePlayback.playAudio(msg.getVoiceMsg());
@@ -200,7 +216,8 @@ public class ChatController implements Initializable {
 
 				BubbledLabel bl6 = new BubbledLabel();
 				if (msg.getType() == MessageType.VOICE){
-					bl6.setGraphic(new ImageView(new Image(getClass().getClassLoader().getResource("images/sound.png").toString())));
+					File soundpic = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/sound.png");
+					bl6.setGraphic(new ImageView(new Image(soundpic.toURI().toString())));
 					bl6.setText("Sent a voice message!");
 					VoicePlayback.playAudio(msg.getVoiceMsg());
 				}else {
@@ -256,16 +273,17 @@ public class ChatController implements Initializable {
 	/* Displays Notification when a user joins */
 	public void newUserNotification(Message msg) {
 		Platform.runLater(() -> {
-			//Image profileImg = new Image(getClass().getClassLoader().getResource("images/" + msg.getPicture().toLowerCase() +".png").toString(),50,50,false,false);
+			File img = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
+			Image profileImg = new Image(img.toURI().toString(),50,50,false,false);
 			TrayNotification tray = new TrayNotification();
 			tray.setTitle("A new user has joined!");
 			tray.setMessage(msg.getName() + " has joined your Boggle room");
-			tray.setRectangleFill(Paint.valueOf("#2C3E50"));
+			tray.setRectangleFill(Paint.valueOf("#3498db"));
 			tray.setAnimationType(AnimationType.POPUP);
-			//     tray.setImage(profileImg);
+			tray.setImage(profileImg);
 			tray.showAndDismiss(Duration.seconds(5));
 			try {
-				File hitFile = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/sounds/SFX_Door_opening.mp3");
+				File hitFile = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/sounds/notification.wav");
 				Media hit = new Media(hitFile.toURI().toString());
 				MediaPlayer mediaPlayer = new MediaPlayer(hit);
 				mediaPlayer.play();
@@ -314,6 +332,7 @@ public class ChatController implements Initializable {
 		t.start();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
@@ -380,7 +399,7 @@ public class ChatController implements Initializable {
 		        Platform.runLater(() -> {
 		        	URL fxmll = null;
 		        	try {
-		        		fxmll = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/src/main/resources/views/LoginView.fxml").toURI().toURL();
+		        		fxmll = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/views/LoginView.fxml").toURI().toURL();
 					} catch (MalformedURLException e1) {
 						e1.printStackTrace();
 					}    
@@ -405,6 +424,5 @@ public class ChatController implements Initializable {
 
 	public void setMatrix(Message message) {
 		message.getMsg();
-		
 	}
 }

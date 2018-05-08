@@ -22,7 +22,7 @@
               <Insets top="25.0" bottom="25.0"/>
          </BorderPane.margin>
            <children>
-             <Label fx:id="currentWord" text=""/>
+             <Label fx:id="currentWord" id="currentWord" text=""/>
            </children>
          </HBox>
        </top>
@@ -33,10 +33,33 @@
              <Button fx:id="letter1" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="A" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
              <Button fx:id="letter2" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="B" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
              <Button fx:id="letter3" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="C" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
-             <Button fx:id="letter3" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="R" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
+             <Button fx:id="letter3" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="D" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
            </children>
          </HBox>
-
+         <HBox alignment="CENTER">
+           <children>
+             <Button fx:id="letter1" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="E" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
+             <Button fx:id="letter2" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="F" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
+             <Button fx:id="letter3" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="G" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
+             <Button fx:id="letter3" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="H" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
+           </children>
+         </HBox>
+         <HBox alignment="CENTER">
+           <children>
+             <Button fx:id="letter1" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="I" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
+             <Button fx:id="letter2" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="J" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
+             <Button fx:id="letter3" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="K" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
+             <Button fx:id="letter3" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="L" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
+           </children>
+         </HBox>
+         <HBox alignment="CENTER">
+           <children>
+             <Button fx:id="letter1" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="M" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
+             <Button fx:id="letter2" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="N" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
+             <Button fx:id="letter3" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="O" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
+             <Button fx:id="letter3" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addLetterAction" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text="P" textAlignment="CENTER" HBox.hgrow="NEVER" id="dark-blue"/>
+           </children>
+         </HBox>
        </VBox>
        </center>
        <bottom>
