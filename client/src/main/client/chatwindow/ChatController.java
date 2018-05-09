@@ -407,6 +407,7 @@ public class ChatController implements Initializable {
 		                break;
 		            case "Default":
 		            	userImage = new File("src/main/ressources/images/default.png");
+		            	System.out.println(userImage.getAbsolutePath());
 		            	this.userImageView.setImage(new Image(userImage.toURI().toString()));
 		                break;
 		        }
