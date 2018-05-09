@@ -77,7 +77,7 @@ public final class TrayNotification {
 	private void initTrayNotification(String title, String message, NotificationType type) {
 
 		try {
-			URL fxml = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/views/TrayNotification.fxml").toURI().toURL();
+			URL fxml = new File("src/main/resources/views/TrayNotification.fxml").toURI().toURL();
 			FXMLLoader fxmlLoader = new FXMLLoader(fxml);
 
 			fxmlLoader.setController(this);
@@ -122,27 +122,27 @@ public final class TrayNotification {
 		switch (nType) {
 
 		case INFORMATION:
-			imageLocation = getClass().getResource("/tray/resources/info.png");
+			imageLocation = getClass().getResource("src/main/traynotifications/resources/info.png");
 			paintHex = "#2C54AB";
 			break;
 
 		case NOTICE:
-			imageLocation = getClass().getResource("/tray/resources/notice.png");
+			imageLocation = getClass().getResource("src/main/traynotifications/resources/notice.png");
 			paintHex = "#8D9695";
 			break;
 
 		case SUCCESS:
-			imageLocation = getClass().getResource("/tray/resources/success.png");
+			imageLocation = getClass().getResource("src/main/traynotifications/resources/success.png");
 			paintHex = "#009961";
 			break;
 
 		case WARNING:
-			imageLocation = getClass().getResource("/tray/resources/warning.png");
+			imageLocation = getClass().getResource("src/main/traynotifications/resources/warning.png");
 			paintHex = "#E23E0A";
 			break;
 
 		case ERROR:
-			imageLocation = getClass().getResource("/tray/resources/error.png");
+			imageLocation = getClass().getResource("src/main/traynotifications/resources/error.png");
 			paintHex = "#CC0033";
 			break;
 

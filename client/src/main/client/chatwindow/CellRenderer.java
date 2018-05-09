@@ -33,12 +33,12 @@ class CellRenderer implements Callback<ListView<User>,ListCell<User>>{
                     Text name = new Text(user.getName());
 
                     ImageView statusImageView = new ImageView();
-                    File stsimg = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/"+ user.getStatus().toString().toLowerCase() + ".png");
+                    File stsimg = new File("src/main/resources/images/"+ user.getStatus().toString().toLowerCase() + ".png");
                     Image statusImage = new Image(stsimg.toURI().toString(), 16, 16,true,true);
                     statusImageView.setImage(statusImage);
 
                     ImageView pictureImageView = new ImageView();
-                    File pimg = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/"+ user.getPicture().toLowerCase() + ".png");
+                    File pimg = new File("src/main/resources/images/"+ user.getPicture().toLowerCase() + ".png");
                     
                     Image image = new Image(pimg.toURI().toString(),50,50,true,true);
                     pictureImageView.setImage(image);

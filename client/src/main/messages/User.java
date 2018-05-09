@@ -6,7 +6,11 @@ import java.io.Serializable;
  * Created by Dominic on 01-May-16.
  */
 public class User implements Serializable {
-
+	
+	  String name;
+	  String picture;
+	  Status status;
+	
     public String getName() {
         return name;
     }
@@ -14,8 +18,6 @@ public class User implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
-    String name;
 
     public String getPicture() {
         return picture;
@@ -33,6 +35,5 @@ public class User implements Serializable {
         this.status = status;
     }
 
-    String picture;
-    Status status;
+
 }

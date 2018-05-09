@@ -77,7 +77,7 @@ public class LoginController implements Initializable {
 				int port = Integer.parseInt(portTextfield.getText());
 				String username = usernameTextfield.getText();
 				String picture = selectedPicture.getText();
-				URL fxml = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/views/ChatView.fxml").toURI().toURL();
+				URL fxml = new File("src/main/resources/views/ChatView.fxml").toURI().toURL();
 				FXMLLoader fmxlLoader = new FXMLLoader(fxml);
 				Parent window = (Pane) fmxlLoader.load();
 				con = fmxlLoader.<ChatController>getController();

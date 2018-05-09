@@ -33,14 +33,14 @@ public class MainLauncher extends Application {
 		vbox.getChildren().add(title);
     	
         primaryStageObj = primaryStage;
-        URL fxml = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/views/LoginView.fxml").toURI().toURL();
+        URL fxml = new File("src/main/resources/views/LoginView.fxml").toURI().toURL();
         Parent root = FXMLLoader.load(fxml);
         
         primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setTitle("Boggle is life");
-        File img = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/plug.png");
+        File img = new File("src/main/resources/images/plug.png");
         primaryStage.getIcons().add(new Image(img.toURI().toString()));
-        Scene mainScene = new Scene(root, 450, 650);
+        Scene mainScene = new Scene(root, 1350, 1450);
         mainScene.setRoot(root);
         
         primaryStage.setResizable(true);

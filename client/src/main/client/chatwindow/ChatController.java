@@ -82,8 +82,8 @@ public class ChatController implements Initializable {
 
 	Word word = new Word();
 
-	File imgMicrophoneActive = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/microphone-active.png");
-	File imgMicrophone = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/microphone.png");
+	File imgMicrophoneActive = new File("src/main/resources/images/microphone-active.png");
+	File imgMicrophone = new File("src/main/resources/images/microphone.png");
 
 	Image microphoneActiveImage = new Image(imgMicrophoneActive.toURI().toString());
 	Image microphoneInactiveImage = new Image(imgMicrophone.toURI().toString());
@@ -190,14 +190,14 @@ public class ChatController implements Initializable {
 		Task<HBox> othersMessages = new Task<HBox>() {
 			@Override
 			public HBox call() throws Exception {
-				File pic = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/" + msg.getPicture() + ".png");
+				File pic = new File("src/main/resources/images/" + msg.getPicture() + ".png");
 				Image image = new Image(pic.toURI().toString());
 				ImageView profileImage = new ImageView(image);
 				profileImage.setFitHeight(32);
 				profileImage.setFitWidth(32);
 				BubbledLabel bl6 = new BubbledLabel();
 				if (msg.getType() == MessageType.VOICE){
-					File soundpic = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/sound.png");
+					File soundpic = new File("src/main/resources/images/sound.png");
 					ImageView imageview = new ImageView(new Image(soundpic.toURI().toString()));
 					bl6.setGraphic(imageview);
 					bl6.setText("Sent a voice message!");
@@ -229,7 +229,7 @@ public class ChatController implements Initializable {
 
 				BubbledLabel bl6 = new BubbledLabel();
 				if (msg.getType() == MessageType.VOICE){
-					File soundpic = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/sound.png");
+					File soundpic = new File("src/main/resources/images/sound.png");
 					bl6.setGraphic(new ImageView(new Image(soundpic.toURI().toString())));
 					bl6.setText("Sent a voice message!");
 					VoicePlayback.playAudio(msg.getVoiceMsg());
@@ -286,7 +286,7 @@ public class ChatController implements Initializable {
 	/* Displays Notification when a user joins */
 	public void newUserNotification(Message msg) {
 		Platform.runLater(() -> {
-			File img = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
+			File img = new File("src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
 			Image profileImg = new Image(img.toURI().toString(),50,50,false,false);
 			TrayNotification tray = new TrayNotification();
 			tray.setTitle("A new user has joined!");
@@ -296,7 +296,7 @@ public class ChatController implements Initializable {
 			tray.setImage(profileImg);
 			tray.showAndDismiss(Duration.seconds(5));
 			try {
-				File hitFile = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/sounds/notification.wav");
+				File hitFile = new File("src/main/resources/sounds/notification.wav");
 				Media hit = new Media(hitFile.toURI().toString());
 				MediaPlayer mediaPlayer = new MediaPlayer(hit);
 				mediaPlayer.play();
@@ -395,24 +395,28 @@ public class ChatController implements Initializable {
 	}
 
 	public void setImageLabel(String selectedPicture) {
-		//        switch (selectedPicture) {
-		//            case "Dominic":
-		//                this.userImageView.setImage(new Image(getClass().getClassLoader().getResource("images/Dominic.png").toString()));
-		//                break;
-		//            case "Sarah":
-		//                this.userImageView.setImage(new Image(getClass().getClassLoader().getResource("images/sarah.png").toString()));
-		//                break;
-		//            case "Default":
-		//                this.userImageView.setImage(new Image(getClass().getClassLoader().getResource("images/default.png").toString()));
-		//                break;
-		//        }
+		File userImage;
+		        switch (selectedPicture) {
+		            case "Dominic":
+		            	userImage = new File("src/main/ressources/images/Dominic.png");
+		            	this.userImageView.setImage(new Image(userImage.toURI().toString()));
+		                break;
+		            case "Sarah":
+		            	userImage = new File("src/main/ressources/images/sarah.png");
+		            	this.userImageView.setImage(new Image(userImage.toURI().toString()));
+		                break;
+		            case "Default":
+		            	userImage = new File("src/main/ressources/images/default.png");
+		            	this.userImageView.setImage(new Image(userImage.toURI().toString()));
+		                break;
+		        }
 	}
 
 	public void logoutScene() {
 		Platform.runLater(() -> {
 			URL fxmll = null;
 			try {
-				fxmll = new File("/home/skylab/UPMC/M1S2/PC2R/PC2R_BOGGLE_PROJECT/client/src/main/resources/views/LoginView.fxml").toURI().toURL();
+				fxmll = new File("src/main/resources/views/LoginView.fxml").toURI().toURL();
 			} catch (MalformedURLException e1) {
 				e1.printStackTrace();
 			}    

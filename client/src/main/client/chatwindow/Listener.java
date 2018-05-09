@@ -140,9 +140,9 @@ public class Listener implements Runnable{
 		createMessage.setStatus(Status.AWAY);
 		createMessage.setVoiceMsg(audio);
 		createMessage.setPicture(picture);
-		sendRaw("ENVOIV/" + createMessage.getName()+"/"+ createMessage.getVoiceMsg());
-		oos.writeObject(createMessage);
-		oos.flush();
+		sendRaw("ENVOIV/" + createMessage.getName()+"/"+ "voiceMessages");
+//		oos.writeObject(createMessage);
+//		oos.flush();
 	}
 
 	/* This method is used for sending a normal Message
