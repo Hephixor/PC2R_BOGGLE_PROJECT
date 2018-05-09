@@ -149,7 +149,7 @@
                 <Insets left="10.0" top="30.0" />
               </HBox.margin>
               <children>
-                <Label fx:id="usernameLabel" text="Dominic Heal" textFill="#3498DB">
+                <Label fx:id="usernameLabel" textFill="#3498DB">
                   <font>
                     <Font name="HelveticaNeue Medium" size="14.0" />
                   </font>

@@ -8,10 +8,9 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -61,6 +60,9 @@ import main.messages.bubble.BubbledLabel;
 import main.traynotifications.animations.AnimationType;
 import main.traynotifications.notification.TrayNotification;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class ChatController implements Initializable {
 
@@ -79,6 +81,7 @@ public class ChatController implements Initializable {
 	@FXML Button letter1,letter2,letter3,letter4,letter5,letter6,letter7,letter8,letter9,letter10,letter11,letter12,letter13,letter14,letter15,letter16;
 	@FXML Label foundWords;
 
+	private int onlineCpt = 0;
 
 	Word word = new Word();
 
@@ -110,23 +113,23 @@ public class ChatController implements Initializable {
 		Node node = (Node) event.getSource();
 		String pos = (String) node.getUserData();
 		Button pressed = (Button) event.getSource();
-		
+
 		if(pressed.getText()!=""){
-		char letter = pressed.getText().charAt(0);
-		StringBuilder builder = new StringBuilder(word.getLetters().size());
-		word.addLetter(letter,pos);  
+			char letter = pressed.getText().charAt(0);
+			StringBuilder builder = new StringBuilder(word.getLetters().size());
+			word.addLetter(letter,pos);  
 
-		for(Character ch: word.getLetters())
-		{
-			builder.append(ch);
-		}
+			for(Character ch: word.getLetters())
+			{
+				builder.append(ch);
+			}
 
-		currentWord.setText(builder.toString());
+			currentWord.setText(builder.toString());
 		}
 	}
 
 	public void removeLetterAction() {
-	//	System.out.println("Removing letter");
+		//	System.out.println("Removing letter");
 		word.removeLetter();
 		StringBuilder builder = new StringBuilder(word.getLetters().size());	
 		for(Character ch: word.getLetters())
@@ -138,7 +141,7 @@ public class ChatController implements Initializable {
 	}
 
 	public void resetBoardAction() {
-	//	System.out.println("Reset board");
+		//	System.out.println("Reset board");
 		word.resetBoard();
 		currentWord.setText("");
 	}
@@ -158,11 +161,11 @@ public class ChatController implements Initializable {
 				builderPos.append(p[0]);
 				builderPos.append(p[1]);
 			}
-			
+
 			if(foundWords.getText()!="")foundWords.setText(foundWords.getText()+","+builder.toString());
-			
+
 			else foundWords.setText(builder.toString());
-			
+
 
 			Listener.sendRaw("TROUVE/"+builder.toString()+"/"+builderPos.toString());
 			word.resetBoard();
@@ -262,6 +265,90 @@ public class ChatController implements Initializable {
 			t.start();
 		}
 	}
+
+	public void addUserChat(String msg, String user) {
+		Task<HBox> othersMessages = new Task<HBox>() {
+			@Override
+			public HBox call() throws Exception {
+				//	File pic = new File("src/main/resources/images/" + msg.getPicture() + ".png");
+				//	Image image = new Image(pic.toURI().toString());
+				//	ImageView profileImage = new ImageView(image);
+				//	profileImage.setFitHeight(32);
+				//	profileImage.setFitWidth(32);
+				File pic = new File("src/main/resources/images/default.png");
+					Image image = new Image(pic.toURI().toString());
+					ImageView profileImage = new ImageView(image);
+					profileImage.setFitHeight(32);
+					profileImage.setFitWidth(32);
+				BubbledLabel bl6 = new BubbledLabel();
+				//				if (msg.getType() == MessageType.VOICE){
+				//					File soundpic = new File("src/main/resources/images/sound.png");
+				//					ImageView imageview = new ImageView(new Image(soundpic.toURI().toString()));
+				//					bl6.setGraphic(imageview);
+				//					bl6.setText("Sent a voice message!");
+				//					VoicePlayback.playAudio(msg.getVoiceMsg());
+				//				}else {
+				bl6.setText(user + ": " + msg);
+				//				}
+				bl6.setBackground(new Background(new BackgroundFill(Color.GREY,null, null)));
+				HBox x = new HBox();
+				bl6.setBubbleSpec(BubbleSpec.FACE_LEFT_CENTER);
+				//x.getChildren().add(bl6);
+				x.getChildren().addAll(profileImage, bl6);
+				//logger.debug("ONLINE USERS: " + Integer.toString(msg.getUserlist().size()));
+				setOnlineLabel(Integer.toString(onlineCpt++));
+				return x;
+			}
+		};
+
+		othersMessages.setOnSucceeded(event -> {
+			chatPane.getItems().add(othersMessages.getValue());
+		});
+
+		Task<HBox> yourMessages = new Task<HBox>() {
+			@Override
+			public HBox call() throws Exception {
+				Image image = userImageView.getImage();
+				ImageView profileImage = new ImageView(image);
+				profileImage.setFitHeight(32);
+				profileImage.setFitWidth(32);
+
+				BubbledLabel bl6 = new BubbledLabel();
+//				if (msg.getType() == MessageType.VOICE){
+//					File soundpic = new File("src/main/resources/images/sound.png");
+//					bl6.setGraphic(new ImageView(new Image(soundpic.toURI().toString())));
+//					bl6.setText("Sent a voice message!");
+//					VoicePlayback.playAudio(msg.getVoiceMsg());
+//				}else {
+					bl6.setText(msg);
+				//}
+				bl6.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN,
+						null, null)));
+				HBox x = new HBox();
+				x.setMaxWidth(chatPane.getWidth() - 20);
+				x.setAlignment(Pos.TOP_RIGHT);
+				bl6.setBubbleSpec(BubbleSpec.FACE_RIGHT_CENTER);
+//				x.getChildren().add(bl6);
+				x.getChildren().addAll(bl6, profileImage);
+
+				setOnlineLabel(Integer.toString(onlineCpt++));
+				return x;
+			}
+		};
+		yourMessages.setOnSucceeded(event -> chatPane.getItems().add(yourMessages.getValue()));
+
+		if (user.equals(usernameLabel.getText())) {
+			Thread t2 = new Thread(yourMessages);
+			t2.setDaemon(true);
+			t2.start();
+		} else {
+			Thread t = new Thread(othersMessages);
+			t.setDaemon(true);
+			t.start();
+		}
+	}
+
+
 	public void setUsernameLabel(String username) {
 		this.usernameLabel.setText(username);
 	}
@@ -288,11 +375,36 @@ public class ChatController implements Initializable {
 	/* Displays Notification when a user joins */
 	public void newUserNotification(Message msg) {
 		Platform.runLater(() -> {
-			File img = new File("src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
+		//	File img = new File("src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
+			File img = new File("src/main/resources/images/default.png");
 			Image profileImg = new Image(img.toURI().toString(),50,50,false,false);
 			TrayNotification tray = new TrayNotification();
 			tray.setTitle("A new user has joined!");
 			tray.setMessage(msg.getName() + " has joined your Boggle room");
+			tray.setRectangleFill(Paint.valueOf("#3498db"));
+			tray.setAnimationType(AnimationType.POPUP);
+			tray.setImage(profileImg);
+			tray.showAndDismiss(Duration.seconds(5));
+			try {
+				File hitFile = new File("src/main/resources/sounds/notification.wav");
+				Media hit = new Media(hitFile.toURI().toString());
+				MediaPlayer mediaPlayer = new MediaPlayer(hit);
+				mediaPlayer.play();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		});
+	}
+	
+	public void newUserEntryNotification(String username) {
+		Platform.runLater(() -> {
+		//	File img = new File("src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
+			File img = new File("src/main/resources/images/default.png");
+			Image profileImg = new Image(img.toURI().toString(),50,50,false,false);
+			TrayNotification tray = new TrayNotification();
+			tray.setTitle("A new user has joined!");
+			tray.setMessage(username + " has joined your Boggle room");
 			tray.setRectangleFill(Paint.valueOf("#3498db"));
 			tray.setAnimationType(AnimationType.POPUP);
 			tray.setImage(profileImg);
@@ -318,7 +430,7 @@ public class ChatController implements Initializable {
 	@FXML
 	public void closeApplication() {
 		try {
-			Listener.sendRaw("SORT/"+usernameLabel.getText()+"/");
+			Listener.sendRaw("SORT/"+Listener.username+"/");
 		} catch (IOException e) {
 			showErrorDialog("Connection Lost", "Connection with server has been interrupted.");
 			e.printStackTrace();
@@ -403,21 +515,21 @@ public class ChatController implements Initializable {
 
 	public void setImageLabel(String selectedPicture) {
 		File userImage;
-		        switch (selectedPicture) {
-		            case "Dominic":
-		            	userImage = new File("src/main/resources/images/Dominic.png");
-		            	this.userImageView.setImage(new Image(userImage.toURI().toString()));
-		                break;
-		            case "Sarah":
-		            	userImage = new File("src/main/resources/images/sarah.png");
-		            	this.userImageView.setImage(new Image(userImage.toURI().toString()));
-		                break;
-		            case "Default":
-		            	userImage = new File("src/main/resources/images/default.png");
-		            	//System.out.println(userImage.getAbsolutePath());
-		            	this.userImageView.setImage(new Image(userImage.toURI().toString()));
-		                break;
-		        }
+		switch (selectedPicture) {
+		case "Dominic":
+			userImage = new File("src/main/resources/images/Dominic.png");
+			this.userImageView.setImage(new Image(userImage.toURI().toString()));
+			break;
+		case "Sarah":
+			userImage = new File("src/main/resources/images/sarah.png");
+			this.userImageView.setImage(new Image(userImage.toURI().toString()));
+			break;
+		case "Default":
+			userImage = new File("src/main/resources/images/default.png");
+			//System.out.println(userImage.getAbsolutePath());
+			this.userImageView.setImage(new Image(userImage.toURI().toString()));
+			break;
+		}
 	}
 
 	public void logoutScene() {
@@ -466,8 +578,18 @@ public class ChatController implements Initializable {
 		letter16.setText(String.valueOf(message.charAt(15)));		
 	}
 	
+	public void setNbUser(int n){
+		onlineCpt = n;
+	}
+
 	public void displayResult(){
+		StringProperty usr = new SimpleStringProperty();
+		usr.setValue(Listener.username);
+		usernameLabel.textProperty().bindBidirectional(usr);
+
+		//TODO Le nom s'efface ? 
 		Platform.runLater(() -> {
+
 			URL fxmll = null;
 			try {
 				fxmll = new File("src/main/resources/views/ResultView.fxml").toURI().toURL();
@@ -485,12 +607,15 @@ public class ChatController implements Initializable {
 			}
 			Stage stage = MainLauncher.getPrimaryStage();
 			Scene scene = new Scene(window);
-//			stage.setMaxWidth(350);
-//			stage.setMaxHeight(420);
-			stage.setResizable(false);
+			//			stage.setMaxWidth(350);
+			//			stage.setMaxHeight(420);
 			stage.setScene(scene);
 			stage.centerOnScreen();
+
+			System.out.println("Le nom est maintenant " + usr.get());
 		});
+
+		setUsernameLabel(Listener.username);
 	}
 
 	public void showErrorDialog(String message, String content) {

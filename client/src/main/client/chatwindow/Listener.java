@@ -52,7 +52,7 @@ public class Listener implements Runnable{
 	public void run() {
 		try {
 			socket = new Socket(hostname, port);
-			
+
 			LoginController.getInstance().showScene();
 			os = socket.getOutputStream();
 			oos = new ObjectOutputStream(os);
@@ -60,22 +60,56 @@ public class Listener implements Runnable{
 			input = new ObjectInputStream(is);
 			in = new BufferedReader(new InputStreamReader(is));
 			out = new BufferedWriter(new OutputStreamWriter(os));
-			
+
 			logger.info("Connection accepted " + socket.getInetAddress() + ":" + socket.getPort());
 			try {
 				connect();           
 				logger.info("Sockets in and out ready!");
 				while (socket.isConnected()) {
+					MessageType msgtype;
 					Message message = null;
+					String transmission = null;
 					try {
 						message = (Message) input.readObject();
-						System.out.println("received :: "+in.readLine());
+						transmission = in.readLine();
+						System.out.println("received :: "+transmission);
 					}
 					catch(EOFException | ClassNotFoundException e) {
-						
+
 					}
 
 					if (message != null) {
+
+						String[] parts = transmission.split("/");
+						switch(parts[0]){
+						case "BIENVENUE":
+							controller.setMatrix(parts[1]);
+							
+							String[] infos = parts[2].split("*");
+							
+							//Comptage des joueurs
+							//Scores
+							
+							msgtype = MessageType.CONNECTED;
+							//Action réception tirage et scores
+							break;
+						case "CONNECTE":
+							controller.addUserChat("message", parts[1]);
+							controller.newUserEntryNotification(parts[1]);
+							msgtype = MessageType.USER;
+							//Action ajout joueur au chat
+							break;
+						case "DECONNEXION":
+							msgtype = MessageType.DISCONNECTED;
+							//Action retrait joueur du chat
+							break;
+
+						default:
+							break;
+
+
+						}
+
 						logger.debug("Message received:" + message.getMsg() + " MessageType:" + message.getType() + "Name:" + message.getName());
 						switch (message.getType()) {
 						case USER:
@@ -122,9 +156,9 @@ public class Listener implements Runnable{
 
 	public static void sendRaw(String msg) throws IOException {
 		System.out.println(msg);
-//		out.append(msg);
-//		out.append("\n");
-//		out.flush();
+		//		out.append(msg);
+		//		out.append("\n");
+		//		out.flush();
 	}
 	/* This method is used for sending a normal Message
 	 * @param msg - The message which the user generates
@@ -137,8 +171,8 @@ public class Listener implements Runnable{
 		createMessage.setMsg(msg);
 		createMessage.setPicture(picture);
 		sendRaw("ENVOI/" + createMessage.getName()+"/"+ createMessage.getMsg());
-//		oos.writeObject(createMessage);
-//		oos.flush();
+		//		oos.writeObject(createMessage);
+		//		oos.flush();
 	}
 
 	/* This method is used for sending a voice Message
@@ -151,9 +185,9 @@ public class Listener implements Runnable{
 		createMessage.setStatus(Status.AWAY);
 		createMessage.setVoiceMsg(audio);
 		createMessage.setPicture(picture);
-//		sendRaw("ENVOIV/" + createMessage.getName()+"/"+ "voiceMessages");
-//		oos.writeObject(createMessage);
-//		oos.flush();
+		//		sendRaw("ENVOIV/" + createMessage.getName()+"/"+ "voiceMessages");
+		//		oos.writeObject(createMessage);
+		//		oos.flush();
 	}
 
 	/* This method is used for sending a normal Message
