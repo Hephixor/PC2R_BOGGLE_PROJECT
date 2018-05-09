@@ -77,7 +77,7 @@ public class LoginController implements Initializable {
 				int port = Integer.parseInt(portTextfield.getText());
 				String username = usernameTextfield.getText();
 				String picture = selectedPicture.getText();
-				System.out.println("pix " + selectedPicture.getText());
+				//System.out.println("pix " + selectedPicture.getText());
 				URL fxml = new File("src/main/resources/views/ChatView.fxml").toURI().toURL();
 				FXMLLoader fmxlLoader = new FXMLLoader(fxml);
 				Parent window = (Pane) fmxlLoader.load();
@@ -98,8 +98,8 @@ public class LoginController implements Initializable {
 		Platform.runLater(() -> {
 			Stage stage = (Stage) hostnameTextfield.getScene().getWindow();
 			stage.setResizable(true);
-			stage.setWidth(1040);
-			stage.setHeight(620);
+//			stage.setWidth(1040);
+//			stage.setHeight(620);
 
 			stage.setOnCloseRequest((WindowEvent e) -> {
 				Platform.exit();

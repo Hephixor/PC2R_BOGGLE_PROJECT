@@ -33,7 +33,7 @@ public class MainLauncher extends Application {
 		File img = new File("src/main/resources/images/plug.png");
 		primaryStage.getIcons().add(new Image(img.toURI().toString()));
 		
-		Scene mainScene = new Scene(root, 1350, 1450);
+		Scene mainScene = new Scene(root,350, 420);
 		mainScene.setRoot(root);
 		
 		primaryStage.setResizable(true);

@@ -110,9 +110,10 @@ public class ChatController implements Initializable {
 		Node node = (Node) event.getSource();
 		String pos = (String) node.getUserData();
 		Button pressed = (Button) event.getSource();
+		
+		if(pressed.getText()!=""){
 		char letter = pressed.getText().charAt(0);
 		StringBuilder builder = new StringBuilder(word.getLetters().size());
-		StringBuilder builderPos = new StringBuilder(word.getTrail().size());
 		word.addLetter(letter,pos);  
 
 		for(Character ch: word.getLetters())
@@ -121,10 +122,11 @@ public class ChatController implements Initializable {
 		}
 
 		currentWord.setText(builder.toString());
+		}
 	}
 
 	public void removeLetterAction() {
-		System.out.println("Removing letter");
+	//	System.out.println("Removing letter");
 		word.removeLetter();
 		StringBuilder builder = new StringBuilder(word.getLetters().size());	
 		for(Character ch: word.getLetters())
@@ -136,7 +138,7 @@ public class ChatController implements Initializable {
 	}
 
 	public void resetBoardAction() {
-		System.out.println("Reset board");
+	//	System.out.println("Reset board");
 		word.resetBoard();
 		currentWord.setText("");
 	}
@@ -315,7 +317,12 @@ public class ChatController implements Initializable {
 
 	@FXML
 	public void closeApplication() {
-		System.out.println("SORT/"+usernameLabel.getText()+"/");
+		try {
+			Listener.sendRaw("SORT/"+usernameLabel.getText()+"/");
+		} catch (IOException e) {
+			showErrorDialog("Connection Lost", "Connection with server has been interrupted.");
+			e.printStackTrace();
+		}
 		Platform.exit();
 		System.exit(0);
 	}
@@ -398,16 +405,16 @@ public class ChatController implements Initializable {
 		File userImage;
 		        switch (selectedPicture) {
 		            case "Dominic":
-		            	userImage = new File("src/main/ressources/images/Dominic.png");
+		            	userImage = new File("src/main/resources/images/Dominic.png");
 		            	this.userImageView.setImage(new Image(userImage.toURI().toString()));
 		                break;
 		            case "Sarah":
-		            	userImage = new File("src/main/ressources/images/sarah.png");
+		            	userImage = new File("src/main/resources/images/sarah.png");
 		            	this.userImageView.setImage(new Image(userImage.toURI().toString()));
 		                break;
 		            case "Default":
-		            	userImage = new File("src/main/ressources/images/default.png");
-		            	System.out.println(userImage.getAbsolutePath());
+		            	userImage = new File("src/main/resources/images/default.png");
+		            	//System.out.println(userImage.getAbsolutePath());
 		            	this.userImageView.setImage(new Image(userImage.toURI().toString()));
 		                break;
 		        }
@@ -440,8 +447,50 @@ public class ChatController implements Initializable {
 		});
 	}
 
-	public void setMatrix(Message message) {
-		message.getMsg();
+	public void setMatrix(String message) {
+		letter1.setText(String.valueOf(message.charAt(0)));
+		letter2.setText(String.valueOf(message.charAt(1)));
+		letter3.setText(String.valueOf(message.charAt(2)));
+		letter4.setText(String.valueOf(message.charAt(3)));
+		letter5.setText(String.valueOf(message.charAt(4)));
+		letter6.setText(String.valueOf(message.charAt(5)));
+		letter7.setText(String.valueOf(message.charAt(6)));
+		letter8.setText(String.valueOf(message.charAt(7)));
+		letter9.setText(String.valueOf(message.charAt(8)));
+		letter10.setText(String.valueOf(message.charAt(9)));
+		letter11.setText(String.valueOf(message.charAt(10)));
+		letter12.setText(String.valueOf(message.charAt(11)));
+		letter13.setText(String.valueOf(message.charAt(12)));
+		letter14.setText(String.valueOf(message.charAt(13)));
+		letter15.setText(String.valueOf(message.charAt(14)));
+		letter16.setText(String.valueOf(message.charAt(15)));		
+	}
+	
+	public void displayResult(){
+		Platform.runLater(() -> {
+			URL fxmll = null;
+			try {
+				fxmll = new File("src/main/resources/views/ResultView.fxml").toURI().toURL();
+			} catch (MalformedURLException e1) {
+				e1.printStackTrace();
+			}    
+
+			FXMLLoader fmxlLoader = new FXMLLoader(fxmll);
+			Parent window = null;
+
+			try {
+				window = (Pane) fmxlLoader.load();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			Stage stage = MainLauncher.getPrimaryStage();
+			Scene scene = new Scene(window);
+//			stage.setMaxWidth(350);
+//			stage.setMaxHeight(420);
+			stage.setResizable(false);
+			stage.setScene(scene);
+			stage.centerOnScreen();
+		});
 	}
 
 	public void showErrorDialog(String message, String content) {

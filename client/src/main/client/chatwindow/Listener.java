@@ -1,16 +1,17 @@
 package main.client.chatwindow;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.Socket;
-import java.net.SocketException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -18,6 +19,9 @@ import main.client.login.LoginController;
 import main.messages.Message;
 import main.messages.MessageType;
 import main.messages.Status;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Listener implements Runnable{
 
@@ -32,7 +36,9 @@ public class Listener implements Runnable{
 	private static ObjectOutputStream oos;
 	private InputStream is;
 	private ObjectInputStream input;
-	private OutputStream outputStream;
+	private static OutputStream os;
+	static Writer out;
+	BufferedReader in;
 	Logger logger = LoggerFactory.getLogger(Listener.class);
 
 	public Listener(String hostname, int port, String username, String picture, ChatController controller) {
@@ -46,11 +52,15 @@ public class Listener implements Runnable{
 	public void run() {
 		try {
 			socket = new Socket(hostname, port);
+			
 			LoginController.getInstance().showScene();
-			outputStream = socket.getOutputStream();
-			oos = new ObjectOutputStream(outputStream);
+			os = socket.getOutputStream();
+			oos = new ObjectOutputStream(os);
 			is = socket.getInputStream();
 			input = new ObjectInputStream(is);
+			in = new BufferedReader(new InputStreamReader(is));
+			out = new BufferedWriter(new OutputStreamWriter(os));
+			
 			logger.info("Connection accepted " + socket.getInetAddress() + ":" + socket.getPort());
 			try {
 				connect();           
@@ -59,9 +69,10 @@ public class Listener implements Runnable{
 					Message message = null;
 					try {
 						message = (Message) input.readObject();
+						System.out.println("received :: "+in.readLine());
 					}
-					catch(EOFException e) {
-
+					catch(EOFException | ClassNotFoundException e) {
+						
 					}
 
 					if (message != null) {
@@ -80,6 +91,7 @@ public class Listener implements Runnable{
 							controller.addAsServer(message);
 							break;
 						case CONNECTED:
+							System.out.println("Connected");
 							controller.setUserList(message);
 							break;
 						case DISCONNECTED:
@@ -89,11 +101,11 @@ public class Listener implements Runnable{
 							controller.setUserList(message);
 							break;
 						case MATRIX:
-							controller.setMatrix(message);
+							controller.setMatrix(message.getMsg());
 						}
 					}
 				}
-			} catch (IOException | ClassNotFoundException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 				showErrorDialog("Connection Error", "Your client has been disconnected !");
 				controller.logoutScene();
@@ -110,10 +122,9 @@ public class Listener implements Runnable{
 
 	public static void sendRaw(String msg) throws IOException {
 		System.out.println(msg);
-		//		oos.writeObject(msg);
-		//		oos.flush();
-		//		oos.writeObject(msg);
-		//		oos.flush();
+//		out.append(msg);
+//		out.append("\n");
+//		out.flush();
 	}
 	/* This method is used for sending a normal Message
 	 * @param msg - The message which the user generates
@@ -126,8 +137,8 @@ public class Listener implements Runnable{
 		createMessage.setMsg(msg);
 		createMessage.setPicture(picture);
 		sendRaw("ENVOI/" + createMessage.getName()+"/"+ createMessage.getMsg());
-		oos.writeObject(createMessage);
-		oos.flush();
+//		oos.writeObject(createMessage);
+//		oos.flush();
 	}
 
 	/* This method is used for sending a voice Message
@@ -140,7 +151,7 @@ public class Listener implements Runnable{
 		createMessage.setStatus(Status.AWAY);
 		createMessage.setVoiceMsg(audio);
 		createMessage.setPicture(picture);
-		sendRaw("ENVOIV/" + createMessage.getName()+"/"+ "voiceMessages");
+//		sendRaw("ENVOIV/" + createMessage.getName()+"/"+ "voiceMessages");
 //		oos.writeObject(createMessage);
 //		oos.flush();
 	}
