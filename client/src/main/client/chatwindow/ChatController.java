@@ -15,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -46,6 +44,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -84,6 +83,11 @@ public class ChatController implements Initializable {
 	@FXML private Button letter1;
 	@FXML Button letter2,letter3,letter4,letter5,letter6,letter7,letter8,letter9,letter10,letter11,letter12,letter13,letter14,letter15,letter16;
 	@FXML Label foundWords;
+	@FXML Label foundInvWords;
+	@FXML VBox gamePane;
+	@FXML VBox resultPane;
+	@FXML VBox sessionPane;
+	@FXML VBox fxscores;
 
 	private int onlineCpt;
 	private ArrayList<User> users;
@@ -184,16 +188,24 @@ public class ChatController implements Initializable {
 				builderPos.append(p[1]);
 			}
 
-			if(foundWords.getText()!="")foundWords.setText(foundWords.getText()+","+builder.toString());
-
-			else foundWords.setText(builder.toString());
-
-
 			Listener.sendRaw("TROUVE/"+builder.toString()+"/"+builderPos.toString());
+			addValidWord(builder.toString());
+			addInvalidWord(builder.toString());
 			word.resetBoard();
 			currentWord.setText("");
 		}
 	}
+	
+	public void addValidWord(String word) {
+		if(foundWords.getText()!="")foundWords.setText(foundWords.getText()+","+word);
+		else foundWords.setText(word);
+	}
+	
+	public void addInvalidWord(String word) {
+		if(foundInvWords.getText()!="")foundInvWords.setText(foundInvWords.getText()+","+word);
+		else foundInvWords.setText(word);
+	}
+
 
 	public void recordVoiceMessage() throws IOException {
 		if (VoiceUtil.isRecording()) {
@@ -213,7 +225,7 @@ public class ChatController implements Initializable {
 	}
 
 
-	public synchronized void addToChat(Message msg) {
+	public void addToChat(Message msg) {
 		Task<HBox> othersMessages = new Task<HBox>() {
 			@Override
 			public HBox call() throws Exception {
@@ -769,47 +781,64 @@ public class ChatController implements Initializable {
 		onlineCpt = n;
 	}
 
-	public void displayResultDebug() {
-		displayResult("skylab*1*hephixor*110");
+	public void displaySession() {
+		gamePane.setVisible(false);
+		gamePane.setManaged(false);
+		resultPane.setVisible(false);
+		resultPane.setManaged(false);
+		sessionPane.setVisible(true);
+		sessionPane.setManaged(true);
 	}
+	
+	public void displayResultDebug() {
+		displayResult("Hervé*12*nrez*41489*Skylab*1*hephixor*110");
+	}
+	
+public void displayGameDebug() {
+	resultPane.setVisible(false);
+	resultPane.setManaged(false);
+	sessionPane.setVisible(false);
+	sessionPane.setManaged(false);
+	gamePane.setVisible(true);
+	gamePane.setManaged(true);
+}
 
 	public void displayResult(String scores){
-		//		StringProperty usr = new SimpleStringProperty();
-		//		usr.setValue(Listener.username);
-		//		usernameLabel.textProperty().bind(usr);
 		Platform.runLater(() -> {
-
-			URL fxmll = null;
-			try {
-				fxmll = new File("src/main/resources/views/ResultView.fxml").toURI().toURL();
-			} catch (MalformedURLException e1) {
-				e1.printStackTrace();
-			}    
-
-			FXMLLoader fmxlLoader = new FXMLLoader(fxmll);
-			Parent window = null;
-
-			try {
-				window = (Pane) fmxlLoader.load();
-			} catch (IOException e) {
-				e.printStackTrace();
+			resultPane.setVisible(true);
+			resultPane.setManaged(true);
+			sessionPane.setVisible(false);
+			sessionPane.setManaged(false);
+			gamePane.setVisible(false);
+			gamePane.setManaged(false);
+			
+			
+			String[] infos = scores.split("\\*");
+			String bs ="${'\n'}";
+			int myScore;
+			for(int i=0;i<infos.length-1;i=i+2) {
+				if(infos[i].equals(usernameLabel.getText())) {
+					myScore=Integer.parseInt(infos[i+1]);
+					System.out.println("My score is " + infos[i+1]);
+					fxscores.getChildren().add(new Label("Your score  : " +infos[i+1]));
+				}			
 			}
-
-			//System.out.println("setting name to " + Listener.username);
-
-			MainLauncher.getPrimaryStage().getScene().setRoot(window);
-			setUsernameLabel(Listener.username);
-			//MainLauncher.getPrimaryStage().setScene(new Scene(window));
-			//			Scene scene = new Scene(window);
-			//			//			stage.setMaxWidth(350);
-			//			//			stage.setMaxHeight(420);
-			//			stage.setScene(scene);
-			//			stage.centerOnScreen();
-
-			//System.out.println("Le nom est maintenant " + usr.get());
+			for(int i=0;i<infos.length-1;i=i+2) {
+				if(infos[i].equals(usernameLabel.getText())) {
+					
+				}	
+				else {
+					fxscores.getChildren().add(new Label(infos[i] +" : " +infos[i+1]));
+				}
+			}
+			
 		});
 
 
+	}
+	
+	public void showSession() {
+		
 	}
 
 	public void showErrorDialog(String message, String content) {

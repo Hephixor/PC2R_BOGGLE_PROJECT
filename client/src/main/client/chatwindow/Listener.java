@@ -46,6 +46,7 @@ public class Listener implements Runnable{
 	private static OutputStream os;
 	static Writer out;
 	BufferedReader in;
+	int nbTours;
 	Logger logger = LoggerFactory.getLogger(Listener.class);
 
 	public Listener(String hostname, int port, String username, String picture, ChatController controller) {
@@ -58,7 +59,7 @@ public class Listener implements Runnable{
 
 	public void run() {
 		try {
-			System.out.println("Establishing connection");
+			System.out.print("Establishing connection... ");
 			socket = new Socket(hostname, port);
 			LoginController.getInstance().showScene();
 			os = socket.getOutputStream();
@@ -67,13 +68,13 @@ public class Listener implements Runnable{
 			//input = new ObjectInputStream(is);
 			in = new BufferedReader(new InputStreamReader(is));
 			out = new BufferedWriter(new OutputStreamWriter(os));
-			System.out.println("Connected");
+			System.out.println("connected !");
 			logger.info("Connection accepted " + socket.getInetAddress() + ":" + socket.getPort());
 			try {
 				connect();           
 				logger.info("Sockets in and out ready!");
 				while (socket.isConnected()) {
-					
+
 					MessageType msgtype;
 					Message message = null;
 					String transmission = null;
@@ -81,7 +82,7 @@ public class Listener implements Runnable{
 						//message = (Message) input.readObject();
 						transmission = in.readLine();
 						Thread.sleep(250);
-						
+
 					}
 					catch(EOFException e) {
 
@@ -91,32 +92,32 @@ public class Listener implements Runnable{
 						String[] infos;
 						System.out.println("server :: "+transmission);
 						String[] parts = transmission.split("/");
-//						for (String string : parts) {
-//							System.out.println("part:  "+string);
-//						}
+						//						for (String string : parts) {
+						//							System.out.println("part:  "+string);
+						//						}
 						switch(parts[0]){
-						
+
 						case "BIENVENUE":
 							infos = parts[2].split("\\*");
-							int nbTours =  Integer.parseInt(infos[0]);
+							nbTours =  Integer.parseInt(infos[0]);
 							int nbUser = (infos.length/2);
 							String[] users = new String[nbUser];
 							int[] scores = new int[nbUser];
 							int cpt = 0;
-							
+
 							for(int i=1; i < infos.length; i = i+2) {
 								users[cpt]=infos[i];
 								scores[cpt]=Integer.parseInt(infos[i+1]);
 								cpt++;
 							}
-							
+
 							controller.setMatrix(parts[1]);
 							controller.setUserListRaw(users,scores);
 							//TODO Scores
 							msgtype = MessageType.CONNECTED;
-							
+
 							break;
-							
+
 						case "CONNECTE":
 							//Pour dire bonjour automatiquement
 							//controller.addUserChat("Bonjour !", parts[1]);
@@ -124,60 +125,63 @@ public class Listener implements Runnable{
 							controller.newUserEntryNotification(parts[1]);
 							msgtype = MessageType.USER;
 							break;
-							
+
 						case "DECONNEXION":
 							controller.removeUserFromList(parts[1]);
 							controller.userDisconnectedNotification(parts[1]);
 							msgtype = MessageType.DISCONNECTED;
-							//Action retrait joueur du chat
+							//Action retrait joueur
 							break;
-							
+
 						case "SESSION":
 							//debut session
-							controller.displayMatrix(true);
+							//controller.displayMatrix(
+							controller.showSession();
 							break;
-							
+
 						case "VAINQUEUR":
 							//rception scores fin
 							break;
-							
+
 						case "TOUR":
 							//recepetion nouveau tirage
 							controller.setMatrix(parts[1]);
 							break;
-							
+
 						case "MVALIDE":
 							//mot proposé validé
+							controller.addValidWord(parts[1]);
 							break;
-							
+
 						case "MINVALIDE":
 							//mot proposé invalidé
+							controller.addInvalidWord(parts[1]);
 							break;
-							
+
 						case "RFIN":
 							//Fin du tour
 							controller.displayMatrix(false);
 							break;
-							
+
 						case "BILANMOTS":
 							//Résultats mots proposés
 							controller.displayResult(parts[1]);
 							break;
-							
+
 						case "RECEPTION":
 							//Reception message
 							controller.addUserMessage(parts[2],parts[1]);
 							break;
-							
+
 						case "PRECEPTION":
 							//Reception message privé
 							break;
-						
+
 						case "STATUS":
 							//Notification de changement de status
 							controller.updateUserStatus(parts[1],parts[2]);
 							break;
-						
+
 						default:
 							break;
 
@@ -247,8 +251,8 @@ public class Listener implements Runnable{
 		createMessage.setMsg(msg);
 		createMessage.setPicture(picture);
 		//	sendRaw("ENVOI/" + createMessage.getName()+"/"+ createMessage.getMsg()+"\n");
-		//		oos.writeObject(createMessage);
-		//		oos.flush();
+		oos.writeObject(createMessage);
+		oos.flush();
 	}
 
 	/* This method is used for sending a voice Message
@@ -301,7 +305,7 @@ public class Listener implements Runnable{
 		});
 
 	}
-	
-	  
+
+
 
 }
