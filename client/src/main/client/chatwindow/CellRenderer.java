@@ -4,6 +4,7 @@ package main.client.chatwindow;
 import java.io.File;
 
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
@@ -30,7 +31,7 @@ class CellRenderer implements Callback<ListView<User>,ListCell<User>>{
                 if (user != null) {
                     HBox hBox = new HBox();
 
-                    Text name = new Text(user.getName());
+                    Text name = new Text(" " + user.getName());
 
                     ImageView statusImageView = new ImageView();
                     File stsimg = new File("src/main/resources/images/"+ user.getStatus().toString().toLowerCase() + ".png");
@@ -42,9 +43,14 @@ class CellRenderer implements Callback<ListView<User>,ListCell<User>>{
                     
                     Image image = new Image(pimg.toURI().toString(),50,50,true,true);
                     pictureImageView.setImage(image);
+                    
+                    Label score = new Label();
+                    score.setAlignment(Pos.CENTER_RIGHT);
+                    score.setText("\t"+String.valueOf(user.getScore()));
 
-                    hBox.getChildren().addAll(statusImageView, pictureImageView, name);
+                    hBox.getChildren().addAll(statusImageView, pictureImageView, name, score);
                     hBox.setAlignment(Pos.CENTER_LEFT);
+                    
 
                     setGraphic(hBox);
                 }

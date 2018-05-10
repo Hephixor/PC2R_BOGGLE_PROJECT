@@ -78,7 +78,7 @@
                 <Insets bottom="10.0" />
               </opaqueInsets>
             </Label>
-            <Label fx:id="onlineCountLabel" prefHeight="48.0" prefWidth="94.0" text="0" textFill="#fc6747">
+            <Label fx:id="onlineCountLabel" prefHeight="48.0" prefWidth="94.0" textFill="#fc6747">
               <opaqueInsets>
                 <Insets />
               </opaqueInsets>

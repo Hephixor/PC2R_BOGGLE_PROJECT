@@ -6,7 +6,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -60,9 +66,6 @@ import main.messages.bubble.BubbledLabel;
 import main.traynotifications.animations.AnimationType;
 import main.traynotifications.notification.TrayNotification;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 public class ChatController implements Initializable {
 
@@ -70,7 +73,7 @@ public class ChatController implements Initializable {
 	@FXML private Label usernameLabel;
 	@FXML private Label currentWord;
 	@FXML private Label onlineCountLabel;
-	@FXML private ListView userList;
+	@FXML private ListView<User> userList;
 	@FXML private ImageView userImageView;
 	@FXML private Button recordBtn;
 	@FXML ListView chatPane;
@@ -78,10 +81,12 @@ public class ChatController implements Initializable {
 	@FXML BorderPane borderPane;
 	@FXML ComboBox statusComboBox;
 	@FXML ImageView microphoneImageView;
-	@FXML Button letter1,letter2,letter3,letter4,letter5,letter6,letter7,letter8,letter9,letter10,letter11,letter12,letter13,letter14,letter15,letter16;
+	@FXML private Button letter1;
+	@FXML Button letter2,letter3,letter4,letter5,letter6,letter7,letter8,letter9,letter10,letter11,letter12,letter13,letter14,letter15,letter16;
 	@FXML Label foundWords;
 
-	private int onlineCpt = 0;
+	private int onlineCpt;
+	private ArrayList<User> users;
 
 	Word word = new Word();
 
@@ -95,13 +100,30 @@ public class ChatController implements Initializable {
 	private double yOffset;
 	Logger logger = LoggerFactory.getLogger(ChatController.class);
 
+	public ArrayList<User> getUsersList() {
+		return this.users;
+	}
+
+	//	public void sendButtonAction() throws IOException {
+	//		String msg = messageBox.getText();
+	//		if (!messageBox.getText().isEmpty()) {
+	//			try {
+	//				Listener.send(msg);
+	//				messageBox.clear();
+	//			}catch(SocketException e) {
+	//				showErrorDialog("Connection Error", "Your client has been disconnected !");
+	//
+	//			}
+	//		}
+	//	}
 
 	public void sendButtonAction() throws IOException {
 		String msg = messageBox.getText();
 		if (!messageBox.getText().isEmpty()) {
 			try {
-				Listener.send(msg);
+				Listener.sendRaw("ENVOI/"+msg+"\n");
 				messageBox.clear();
+				addUserMessage(msg, usernameLabel.getText());
 			}catch(SocketException e) {
 				showErrorDialog("Connection Error", "Your client has been disconnected !");
 
@@ -266,7 +288,7 @@ public class ChatController implements Initializable {
 		}
 	}
 
-	public void addUserChat(String msg, String user) {
+	public void addUserMessage(String msg, String user) {
 		Task<HBox> othersMessages = new Task<HBox>() {
 			@Override
 			public HBox call() throws Exception {
@@ -276,10 +298,10 @@ public class ChatController implements Initializable {
 				//	profileImage.setFitHeight(32);
 				//	profileImage.setFitWidth(32);
 				File pic = new File("src/main/resources/images/default.png");
-					Image image = new Image(pic.toURI().toString());
-					ImageView profileImage = new ImageView(image);
-					profileImage.setFitHeight(32);
-					profileImage.setFitWidth(32);
+				Image image = new Image(pic.toURI().toString());
+				ImageView profileImage = new ImageView(image);
+				profileImage.setFitHeight(32);
+				profileImage.setFitWidth(32);
 				BubbledLabel bl6 = new BubbledLabel();
 				//				if (msg.getType() == MessageType.VOICE){
 				//					File soundpic = new File("src/main/resources/images/sound.png");
@@ -314,13 +336,13 @@ public class ChatController implements Initializable {
 				profileImage.setFitWidth(32);
 
 				BubbledLabel bl6 = new BubbledLabel();
-//				if (msg.getType() == MessageType.VOICE){
-//					File soundpic = new File("src/main/resources/images/sound.png");
-//					bl6.setGraphic(new ImageView(new Image(soundpic.toURI().toString())));
-//					bl6.setText("Sent a voice message!");
-//					VoicePlayback.playAudio(msg.getVoiceMsg());
-//				}else {
-					bl6.setText(msg);
+				//				if (msg.getType() == MessageType.VOICE){
+				//					File soundpic = new File("src/main/resources/images/sound.png");
+				//					bl6.setGraphic(new ImageView(new Image(soundpic.toURI().toString())));
+				//					bl6.setText("Sent a voice message!");
+				//					VoicePlayback.playAudio(msg.getVoiceMsg());
+				//				}else {
+				bl6.setText(msg);
 				//}
 				bl6.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN,
 						null, null)));
@@ -328,7 +350,7 @@ public class ChatController implements Initializable {
 				x.setMaxWidth(chatPane.getWidth() - 20);
 				x.setAlignment(Pos.TOP_RIGHT);
 				bl6.setBubbleSpec(BubbleSpec.FACE_RIGHT_CENTER);
-//				x.getChildren().add(bl6);
+				//				x.getChildren().add(bl6);
 				x.getChildren().addAll(bl6, profileImage);
 
 				setOnlineLabel(Integer.toString(onlineCpt++));
@@ -348,13 +370,14 @@ public class ChatController implements Initializable {
 		}
 	}
 
-
 	public void setUsernameLabel(String username) {
-		this.usernameLabel.setText(username);
+		Platform.runLater(() -> usernameLabel.setText(username));
 	}
 
 	public void setImageLabel() throws IOException {
-		//this.userImageView.setImage(new Image(getClass().getClassLoader().getResource("images/Dominic.png").toString()));
+		File img = new File("src/main/resources/images/Default.png");
+		Platform.runLater(() -> userImageView.setImage(new Image(img.toURI().toString())));
+
 	}
 
 	public void setOnlineLabel(String usercount) {
@@ -372,10 +395,101 @@ public class ChatController implements Initializable {
 		logger.info("setUserList() method Exit");
 	}
 
+	public void setUserListRaw(String[] usrs, int[] scores) {
+		logger.info("setUserListRaw() method Enter");
+		Platform.runLater(() -> {
+			users = new ArrayList<User>();
+			for(int i = 0 ; i < usrs.length; i++) {
+				User usr = new User();
+				usr.setName(usrs[i]);
+				usr.setScore(scores[i]);
+				usr.setPicture("Default");
+				usr.setStatus(Status.ONLINE);
+				users.add(usr);
+			}
+
+			ObservableList<User> userz = FXCollections.observableList(users);
+			userList.setItems(userz);
+			userList.setCellFactory(new CellRenderer());
+			//			for (User user : users) {
+			//				System.out.println("User " + user.getName() + "added");
+			//			}
+			setNbUser(usrs.length);
+			setOnlineLabel(String.valueOf(onlineCpt));
+			//			System.out.println("Nbusers : " + onlineCpt);
+			logger.info("setUserListRaw() method Exit");
+		});
+
+	}
+
+	public void updateUserStatus(String name, String status) {
+		Platform.runLater(() -> {
+
+			for (User user : users) {
+				if(user.getName()=="name") {
+					switch(status) {
+
+					case "ONLINE":
+						user.setStatus(Status.ONLINE);
+						break;
+
+					case "AWAY":
+						user.setStatus(Status.AWAY);
+						break;
+
+					case "BUSY":
+						user.setStatus(Status.BUSY);
+						break;
+
+					default:
+						break;
+					}
+				}
+			}
+
+			ObservableList<User> userz = FXCollections.observableList(users);
+			userList.setItems(userz);
+			userList.setCellFactory(new CellRenderer());
+
+
+		});
+	}
+
+	public void addUserToList(String s) {
+		Platform.runLater(() -> {
+			User newbie = new User();
+			newbie.setName(s);
+			newbie.setScore(0);
+			newbie.setStatus(Status.ONLINE);
+			newbie.setPicture("Default");
+
+			users.add(newbie);
+			ObservableList<User> userz = FXCollections.observableList(users);
+			userList.setItems(userz);
+			userList.setCellFactory(new CellRenderer());
+
+			setOnlineLabel(String.valueOf(users.size()));
+
+		});
+	}
+
+	public void removeUserFromList(String s) {
+		Platform.runLater(() -> {
+
+			users = (ArrayList<User>) users.stream().filter(pulse -> pulse.getName().equals(s)).collect(Collectors.toList());
+			ObservableList<User> userz = FXCollections.observableList(users);
+			userList.setItems(userz);
+			userList.setCellFactory(new CellRenderer());
+
+			setOnlineLabel(String.valueOf(users.size()));
+
+		});
+	}
+
 	/* Displays Notification when a user joins */
 	public void newUserNotification(Message msg) {
 		Platform.runLater(() -> {
-		//	File img = new File("src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
+			//	File img = new File("src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
 			File img = new File("src/main/resources/images/default.png");
 			Image profileImg = new Image(img.toURI().toString(),50,50,false,false);
 			TrayNotification tray = new TrayNotification();
@@ -396,16 +510,40 @@ public class ChatController implements Initializable {
 
 		});
 	}
-	
+
 	public void newUserEntryNotification(String username) {
 		Platform.runLater(() -> {
-		//	File img = new File("src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
+			//	File img = new File("src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
 			File img = new File("src/main/resources/images/default.png");
 			Image profileImg = new Image(img.toURI().toString(),50,50,false,false);
 			TrayNotification tray = new TrayNotification();
 			tray.setTitle("A new user has joined!");
 			tray.setMessage(username + " has joined your Boggle room");
 			tray.setRectangleFill(Paint.valueOf("#3498db"));
+			tray.setAnimationType(AnimationType.POPUP);
+			tray.setImage(profileImg);
+			tray.showAndDismiss(Duration.seconds(5));
+			try {
+				File hitFile = new File("src/main/resources/sounds/notification.wav");
+				Media hit = new Media(hitFile.toURI().toString());
+				MediaPlayer mediaPlayer = new MediaPlayer(hit);
+				mediaPlayer.play();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		});
+	}
+
+	public void userDisconnectedNotification(String username) {
+		Platform.runLater(() -> {
+			//	File img = new File("src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
+			File img = new File("src/main/resources/images/default.png");
+			Image profileImg = new Image(img.toURI().toString(),50,50,false,false);
+			TrayNotification tray = new TrayNotification();
+			tray.setTitle("A user left");
+			tray.setMessage(username + " has left your Boggle room");
+			tray.setRectangleFill(Paint.valueOf("#ffcccc"));
 			tray.setAnimationType(AnimationType.POPUP);
 			tray.setImage(profileImg);
 			tray.showAndDismiss(Duration.seconds(5));
@@ -430,7 +568,7 @@ public class ChatController implements Initializable {
 	@FXML
 	public void closeApplication() {
 		try {
-			Listener.sendRaw("SORT/"+Listener.username+"/");
+			Listener.sendRaw("SORT/"+Listener.username+"/\n");
 		} catch (IOException e) {
 			showErrorDialog("Connection Lost", "Connection with server has been interrupted.");
 			e.printStackTrace();
@@ -440,7 +578,7 @@ public class ChatController implements Initializable {
 	}
 
 	/* Method to display server messages */
-	public synchronized void addAsServer(Message msg) {
+	public void addAsServer(Message msg) {
 		Task<HBox> task = new Task<HBox>() {
 			@Override
 			public HBox call() throws Exception {
@@ -560,34 +698,85 @@ public class ChatController implements Initializable {
 	}
 
 	public void setMatrix(String message) {
-		letter1.setText(String.valueOf(message.charAt(0)));
-		letter2.setText(String.valueOf(message.charAt(1)));
-		letter3.setText(String.valueOf(message.charAt(2)));
-		letter4.setText(String.valueOf(message.charAt(3)));
-		letter5.setText(String.valueOf(message.charAt(4)));
-		letter6.setText(String.valueOf(message.charAt(5)));
-		letter7.setText(String.valueOf(message.charAt(6)));
-		letter8.setText(String.valueOf(message.charAt(7)));
-		letter9.setText(String.valueOf(message.charAt(8)));
-		letter10.setText(String.valueOf(message.charAt(9)));
-		letter11.setText(String.valueOf(message.charAt(10)));
-		letter12.setText(String.valueOf(message.charAt(11)));
-		letter13.setText(String.valueOf(message.charAt(12)));
-		letter14.setText(String.valueOf(message.charAt(13)));
-		letter15.setText(String.valueOf(message.charAt(14)));
-		letter16.setText(String.valueOf(message.charAt(15)));		
+		Platform.runLater(() -> {
+
+			initBtn(letter1,String.valueOf(message.charAt(0)));
+			initBtn(letter2,String.valueOf(message.charAt(1)));
+			initBtn(letter3,String.valueOf(message.charAt(2)));
+			initBtn(letter4,String.valueOf(message.charAt(3)));
+			initBtn(letter5,String.valueOf(message.charAt(4)));
+			initBtn(letter6,String.valueOf(message.charAt(5)));
+			initBtn(letter7,String.valueOf(message.charAt(6)));
+			initBtn(letter8,String.valueOf(message.charAt(7)));
+			initBtn(letter9,String.valueOf(message.charAt(8)));
+			initBtn(letter10,String.valueOf(message.charAt(9)));
+			initBtn(letter11,String.valueOf(message.charAt(10)));
+			initBtn(letter12,String.valueOf(message.charAt(11)));
+			initBtn(letter13,String.valueOf(message.charAt(12)));
+			initBtn(letter14,String.valueOf(message.charAt(13)));
+			initBtn(letter15,String.valueOf(message.charAt(14)));
+			initBtn(letter16,String.valueOf(message.charAt(15)));
+
+		});
 	}
-	
+
+	public void displayMatrix(boolean b) {
+		Platform.runLater(() -> {
+
+			letter1.setVisible(b);
+			letter2.setVisible(b);
+			letter3.setVisible(b);
+			letter4.setVisible(b);
+			letter5.setVisible(b);
+			letter6.setVisible(b);
+			letter7.setVisible(b);
+			letter8.setVisible(b);
+			letter9.setVisible(b);
+			letter10.setVisible(b);
+			letter11.setVisible(b);
+			letter12.setVisible(b);
+			letter13.setVisible(b);
+			letter14.setVisible(b);
+			letter15.setVisible(b);
+			letter16.setVisible(b);
+
+		});
+	}
+
+	public void initBtn(Button btn , String txt) {
+		int randomNum ;
+		randomNum = ThreadLocalRandom.current().nextInt(0, 3 + 1);
+		btn.setText(txt);
+		switch(randomNum) {
+		case 0:
+			btn.setRotate(0);
+			break;
+		case 1:
+			btn.setRotate(90);
+			break;
+		case 2:
+			btn.setRotate(180);
+			break;
+		case 3:
+			btn.setRotate(270);
+			break;
+		}
+
+		//btn.setVisible(false);
+	}
+
 	public void setNbUser(int n){
 		onlineCpt = n;
 	}
 
-	public void displayResult(){
-		StringProperty usr = new SimpleStringProperty();
-		usr.setValue(Listener.username);
-		usernameLabel.textProperty().bindBidirectional(usr);
+	public void displayResultDebug() {
+		displayResult("skylab*1*hephixor*110");
+	}
 
-		//TODO Le nom s'efface ? 
+	public void displayResult(String scores){
+		//		StringProperty usr = new SimpleStringProperty();
+		//		usr.setValue(Listener.username);
+		//		usernameLabel.textProperty().bind(usr);
 		Platform.runLater(() -> {
 
 			URL fxmll = null;
@@ -605,17 +794,22 @@ public class ChatController implements Initializable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			Stage stage = MainLauncher.getPrimaryStage();
-			Scene scene = new Scene(window);
-			//			stage.setMaxWidth(350);
-			//			stage.setMaxHeight(420);
-			stage.setScene(scene);
-			stage.centerOnScreen();
 
-			System.out.println("Le nom est maintenant " + usr.get());
+			//System.out.println("setting name to " + Listener.username);
+
+			MainLauncher.getPrimaryStage().getScene().setRoot(window);
+			setUsernameLabel(Listener.username);
+			//MainLauncher.getPrimaryStage().setScene(new Scene(window));
+			//			Scene scene = new Scene(window);
+			//			//			stage.setMaxWidth(350);
+			//			//			stage.setMaxHeight(420);
+			//			stage.setScene(scene);
+			//			stage.centerOnScreen();
+
+			//System.out.println("Le nom est maintenant " + usr.get());
 		});
 
-		setUsernameLabel(Listener.username);
+
 	}
 
 	public void showErrorDialog(String message, String content) {
@@ -628,4 +822,13 @@ public class ChatController implements Initializable {
 		});
 
 	}
+
+	//	private void bindToTime(Object o) {
+	//		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0),
+	//				event -> ((Labeled) o).setText(LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME))),
+	//				new KeyFrame(Duration.seconds(1)));
+	//
+	//		timeline.setCycleCount(Animation.INDEFINITE);
+	//		timeline.play();
+	//	}
 }
