@@ -170,7 +170,17 @@ public class Listener implements Runnable{
 
 						case "RECEPTION":
 							//Reception message
-							controller.addUserMessage("system",parts[1]);
+							System.out.println("Comparing 1 " + parts[1].toUpperCase() + "  vs " + username.toUpperCase());
+							System.out.println("b 1 " + parts[1].toUpperCase().equals(username.toUpperCase()));
+							
+							System.out.println("Comparing 2 " + parts[2].toUpperCase() + "  vs " + username.toUpperCase());
+							System.out.println("b 2 " + parts[2].toUpperCase().equals(username.toUpperCase()));
+							
+							if(parts[2].toUpperCase().equals(username.toUpperCase())) {
+								//Ignore messsage
+								System.out.println("J'ignore le message");
+							}
+							controller.addUserMessage(parts[1],parts[2]);
 							break;
 
 						case "PRECEPTION":

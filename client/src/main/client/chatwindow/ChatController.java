@@ -125,7 +125,7 @@ public class ChatController implements Initializable {
 		String msg = messageBox.getText();
 		if (!messageBox.getText().isEmpty()) {
 			try {
-				Listener.sendRaw("ENVOI/"+msg+"\n");
+				Listener.sendRaw("ENVOI/"+msg+"/\n");
 				messageBox.clear();
 				addUserMessage(msg, usernameLabel.getText());
 			}catch(SocketException e) {
