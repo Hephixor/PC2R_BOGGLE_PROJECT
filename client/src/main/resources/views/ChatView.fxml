@@ -88,7 +88,7 @@
         </BorderPane>
       </VBox>
       <VBox fx:id="sessionPane"  alignment="CENTER">
-        <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #f4f4f4;" BorderPane.alignment="CENTER">
+        <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #f4f4f4;" BorderPane.alignment="CENTER" minHeight="400.0">
           <top>
             <HBox alignment="CENTER">
               <BorderPane.margin>

@@ -788,6 +788,8 @@ public class ChatController implements Initializable {
 		resultPane.setManaged(false);
 		sessionPane.setVisible(true);
 		sessionPane.setManaged(true);
+		MainLauncher.getPrimaryStage().setWidth(MainLauncher.getPrimaryStage().getMaxWidth());
+		MainLauncher.getPrimaryStage().setHeight(MainLauncher.getPrimaryStage().getMaxHeight());
 	}
 	
 	public void displayResultDebug() {
@@ -801,6 +803,8 @@ public void displayGameDebug() {
 	sessionPane.setManaged(false);
 	gamePane.setVisible(true);
 	gamePane.setManaged(true);
+	MainLauncher.getPrimaryStage().setWidth(MainLauncher.getPrimaryStage().getMaxWidth());
+	MainLauncher.getPrimaryStage().setHeight(MainLauncher.getPrimaryStage().getMaxHeight());
 }
 
 	public void displayResult(String scores){
@@ -811,7 +815,8 @@ public void displayGameDebug() {
 			sessionPane.setManaged(false);
 			gamePane.setVisible(false);
 			gamePane.setManaged(false);
-			
+			MainLauncher.getPrimaryStage().setWidth(MainLauncher.getPrimaryStage().getMaxWidth());
+			MainLauncher.getPrimaryStage().setHeight(MainLauncher.getPrimaryStage().getMaxHeight());
 			
 			String[] infos = scores.split("\\*");
 			String bs ="${'\n'}";
@@ -819,7 +824,8 @@ public void displayGameDebug() {
 			for(int i=0;i<infos.length-1;i=i+2) {
 				if(infos[i].equals(usernameLabel.getText())) {
 					myScore=Integer.parseInt(infos[i+1]);
-					System.out.println("My score is " + infos[i+1]);
+					//System.out.println("My score is " + infos[i+1]);
+					//TODO changer score perso
 					fxscores.getChildren().add(new Label("Your score  : " +infos[i+1]));
 				}			
 			}
@@ -852,6 +858,11 @@ public void displayGameDebug() {
 
 	}
 
+	public void resize() {
+		MainLauncher.getPrimaryStage().setWidth(MainLauncher.getPrimaryStage().getMaxWidth());
+		MainLauncher.getPrimaryStage().setHeight(MainLauncher.getPrimaryStage().getMaxHeight());
+	}
+	
 	//	private void bindToTime(Object o) {
 	//		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0),
 	//				event -> ((Labeled) o).setText(LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME))),

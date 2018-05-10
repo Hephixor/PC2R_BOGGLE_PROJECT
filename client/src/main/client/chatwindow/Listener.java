@@ -74,7 +74,7 @@ public class Listener implements Runnable{
 				connect();           
 				logger.info("Sockets in and out ready!");
 				while (socket.isConnected()) {
-
+					controller.resize();
 					MessageType msgtype;
 					Message message = null;
 					String transmission = null;
@@ -170,7 +170,7 @@ public class Listener implements Runnable{
 
 						case "RECEPTION":
 							//Reception message
-							controller.addUserMessage(parts[2],parts[1]);
+							controller.addUserMessage("system",parts[1]);
 							break;
 
 						case "PRECEPTION":

@@ -39,8 +39,7 @@ public class MainLauncher extends Application {
 		primaryStage.setResizable(true);
 		primaryStage.setScene(mainScene);
 		primaryStage.sizeToScene();
-		primaryStage.setMinWidth(primaryStage.getWidth());
-		primaryStage.setMinHeight(primaryStage.getHeight());
+		primaryStage.centerOnScreen();
 		
 		if(host!="")LoginController.getInstance().setHost(host);	
 		if(port!=-1)LoginController.getInstance().setPort(port);	
