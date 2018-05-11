@@ -144,6 +144,8 @@
                   <children>
                     <Label text="Règles du chat: " />
                     <Text text="Il n'y a aucune règle."/>
+                    <Text text="Pour envoyer un message privé : "/>
+                    <Text text="/w name message"/>
                   </children>
                 </VBox>
               </children>

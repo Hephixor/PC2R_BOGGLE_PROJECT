@@ -803,7 +803,7 @@ public class ChatController implements Initializable {
 			fxscoresfinal.getChildren().clear();
 			fxscoresfinal.getChildren().add(winnerh);
 
-			for(int i=0;i<infos.length-1;i=i+2) {
+			for(int i=1;i<infos.length-1;i=i+2) {
 				if(Integer.parseInt(infos[i+1])>max) {
 					winner = infos[i];
 					max = Integer.parseInt(infos[i+1]);
@@ -818,7 +818,7 @@ public class ChatController implements Initializable {
 
 			winid.setText(winner +" ("+max+" pts)");
 
-			for(int i=0;i<infos.length-1;i=i+2) {
+			for(int i=1;i<infos.length-1;i=i+2) {
 				if(infos[i].equals(usernameLabel.getText())) {
 
 				}
@@ -885,11 +885,11 @@ public class ChatController implements Initializable {
 			//Update score des joueurs
 			String[] infos = scores.split("\\*");
 			//Cela eût été plus facile avec une hashmap
-			for(int i=0;i<infos.length-1;i=i+2) {
+			for(int i=1;i<infos.length-1;i=i+2) {
 				//Update
 				for (User us : users) {
 					if(us.getName().toUpperCase().equals(infos[i].toUpperCase())) {
-						us.setScore(us.getScore()+Integer.parseInt(infos[i+1]));
+						us.setScore(Integer.parseInt(infos[i+1]));
 					}
 				}
 
@@ -935,7 +935,8 @@ public class ChatController implements Initializable {
 	}
 
 	public void resize() {
-//		MainLauncher.getPrimaryStage().setWidth(MainLauncher.getPrimaryStage().getMaxWidth());
+		//Pose problème avec JDK apparement 
+	//	MainLauncher.getPrimaryStage().setWidth(MainLauncher.getPrimaryStage().getMaxWidth());
 	//	MainLauncher.getPrimaryStage().setHeight(MainLauncher.getPrimaryStage().getMaxHeight());
 	//	MainLauncher.getPrimaryStage().setMaximized(true);
 		MainLauncher.getPrimaryStage().setHeight(700);
