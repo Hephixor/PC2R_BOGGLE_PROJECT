@@ -276,9 +276,9 @@ public class ChatController implements Initializable {
 				bl6.setBackground(new Background(new BackgroundFill(Color.GREY,null, null)));
 				HBox x = new HBox();
 				bl6.setBubbleSpec(BubbleSpec.FACE_LEFT_CENTER);
-				//x.getChildren().add(bl6);
+				bl6.setWrapText(true);
 				x.getChildren().addAll(profileImage, bl6);
-				//logger.debug("ONLINE USERS: " + Integer.toString(msg.getUserlist().size()));
+				
 				return x;
 			}
 		};
@@ -307,9 +307,10 @@ public class ChatController implements Initializable {
 				bl6.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN,
 						null, null)));
 				HBox x = new HBox();
-				x.setMaxWidth(chatPane.getWidth() - 20);
+				//x.setMaxWidth(chatPane.getWidth() - 20);
 				x.setAlignment(Pos.TOP_RIGHT);
 				bl6.setBubbleSpec(BubbleSpec.FACE_RIGHT_CENTER);
+				bl6.setWrapText(true);
 				//				x.getChildren().add(bl6);
 				x.getChildren().addAll(bl6, profileImage);
 
@@ -901,8 +902,8 @@ public class ChatController implements Initializable {
 				}
 			}
 
-			//Display aother players' score
-			for(int i=0;i<infos.length-1;i=i+2) {
+			//Display other players' score
+			for(int i=1;i<infos.length-1;i=i+2) {
 				if(infos[i].equals(usernameLabel.getText())) {
 
 				}
