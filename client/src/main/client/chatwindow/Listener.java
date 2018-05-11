@@ -47,7 +47,7 @@ public class Listener implements Runnable{
 	static Writer out;
 	BufferedReader in;
 	int nbTours;
-	Logger logger = LoggerFactory.getLogger(Listener.class);
+	static Logger logger = LoggerFactory.getLogger(Listener.class);
 
 	public Listener(String hostname, int port, String username, String picture, ChatController controller) {
 		this.hostname = hostname;
@@ -90,7 +90,7 @@ public class Listener implements Runnable{
 
 					if (transmission != null) {
 						String[] infos;
-						System.out.println("server :: "+transmission);
+						logger.info("server :: "+transmission);
 						String[] parts = transmission.split("/");
 						//						for (String string : parts) {
 						//							System.out.println("part:  "+string);
@@ -113,7 +113,6 @@ public class Listener implements Runnable{
 
 							controller.setMatrix(parts[1]);
 							controller.setUserListRaw(users,scores);
-							//TODO Scores
 							msgtype = MessageType.CONNECTED;
 
 							break;
@@ -135,19 +134,24 @@ public class Listener implements Runnable{
 
 						case "SESSION":
 							//debut session
-							//controller.displayMatrix(
-							controller.showSession();
+							controller.displaySession();
+							controller.resetScore();
 							break;
 
 						case "VAINQUEUR":
 							//rception scores fin
+							controller.displayEnd("Skylab*1222*macron*2");
+							//controller.displayEnd(parts[1]);
 							break;
 
 						case "TOUR":
 							//recepetion nouveau tirage
 							controller.setMatrix(parts[1]);
+							controller.displayMatrix(true);
+							controller.resetWords();
+							controller.displayGame();
 							break;
-
+							
 						case "MVALIDE":
 							//mot proposé validé
 							controller.addValidWord(parts[1]);
@@ -161,30 +165,25 @@ public class Listener implements Runnable{
 						case "RFIN":
 							//Fin du tour
 							controller.displayMatrix(false);
+							controller.resetBoardAction();
 							break;
 
 						case "BILANMOTS":
 							//Résultats mots proposés
-							controller.displayResult(parts[1]);
+							controller.displayResult("Skylab*120*macron*1","trotinette*roller");
+							//controller.displayResult(parts[2],parts[1]);
 							break;
 
 						case "RECEPTION":
 							//Reception message
-							System.out.println("Comparing 1 " + parts[1].toUpperCase() + "  vs " + username.toUpperCase());
-							System.out.println("b 1 " + parts[1].toUpperCase().equals(username.toUpperCase()));
-							
-							System.out.println("Comparing 2 " + parts[2].toUpperCase() + "  vs " + username.toUpperCase());
-							System.out.println("b 2 " + parts[2].toUpperCase().equals(username.toUpperCase()));
-							
-							if(parts[2].toUpperCase().equals(username.toUpperCase())) {
-								//Ignore messsage
-								System.out.println("J'ignore le message");
+							if(!(parts[2].toUpperCase().equals(username.toUpperCase()))) {
+								controller.addUserMessage(parts[1],parts[2]);
 							}
-							controller.addUserMessage(parts[1],parts[2]);
 							break;
 
 						case "PRECEPTION":
 							//Reception message privé
+							controller.addPrivateMessage(parts[1],username,parts[2]);
 							break;
 
 						case "STATUS":
@@ -193,6 +192,7 @@ public class Listener implements Runnable{
 							break;
 
 						default:
+							logger.error("Unrecognized server command :: "+transmission);
 							break;
 
 
@@ -238,14 +238,18 @@ public class Listener implements Runnable{
 		} catch (IOException e) {
 			LoginController.getInstance().showErrorDialog("Could not connect to server","Please check for firewall issues and check if the server is running.");
 			logger.error("Could not Connect");
+			
 		}
 
 
 	}
+	
+	
 
 
 	public static void sendRaw(String msg) throws IOException {
-		System.out.println(msg);
+		logger.info("client :: " + msg);
+		//System.out.println("client :: "+msg);
 		out.append(msg);
 		//out.append("\n");
 		out.flush();

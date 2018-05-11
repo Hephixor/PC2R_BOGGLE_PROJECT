@@ -6,8 +6,22 @@
     -fx-opacity: 0.6;
 }
 
-#currentWord{
-  -fx-font-family: "SansSerif Regular";
+#title{
+  -fx-font: 60px Tahoma;
+  -fx-stroke: black;
+  -fx-stroke-width: 1;
+}
+
+#subtitle{
+  -fx-font: 30px Tahoma;
+  -fx-stroke: black;
+  -fx-stroke-width: 1;
+}
+
+#data{
+  -fx-font: 20px Tahoma;
+  -fx-stroke: black;
+  -fx-stroke-width: 1;
 }
 
 #dark-blue {

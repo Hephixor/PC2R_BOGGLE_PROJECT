@@ -80,16 +80,20 @@ public class ChatController implements Initializable {
 	@FXML BorderPane borderPane;
 	@FXML ComboBox statusComboBox;
 	@FXML ImageView microphoneImageView;
-	@FXML private Button letter1;
+	@FXML Button letter1;
 	@FXML Button letter2,letter3,letter4,letter5,letter6,letter7,letter8,letter9,letter10,letter11,letter12,letter13,letter14,letter15,letter16;
 	@FXML Label foundWords;
+	@FXML Label foundWordsfinal;
 	@FXML Label foundInvWords;
 	@FXML VBox gamePane;
 	@FXML VBox resultPane;
 	@FXML VBox sessionPane;
+	@FXML VBox endPane;
 	@FXML VBox fxscores;
+	@FXML VBox fxscoresfinal;
 
 	private int onlineCpt;
+	private int currRound;
 	private ArrayList<User> users;
 
 	Word word = new Word();
@@ -124,13 +128,34 @@ public class ChatController implements Initializable {
 	public void sendButtonAction() throws IOException {
 		String msg = messageBox.getText();
 		if (!messageBox.getText().isEmpty()) {
-			try {
-				Listener.sendRaw("ENVOI/"+msg+"/\n");
-				messageBox.clear();
-				addUserMessage(msg, usernameLabel.getText());
-			}catch(SocketException e) {
-				showErrorDialog("Connection Error", "Your client has been disconnected !");
 
+			if(msg.charAt(0)=='/' && msg.charAt(1)=='w') {
+				String[] infos = msg.split(" ");
+				String receiver = infos[1];
+				String message="";
+				for(int i = 2 ; i < infos.length;i++) {
+					message+=infos[i]+" ";
+				}
+				System.out.println("client : PENVOI/"+receiver+"/"+message);
+				try {
+					Listener.sendRaw("PENVOI/"+receiver+"/"+message+"/\n");
+					messageBox.clear();
+					addPrivateMessage(message, receiver, usernameLabel.getText());
+				}catch(SocketException e) {
+					showErrorDialog("Connection Error", "Your client has been disconnected !");
+
+				}
+			}
+
+			else {
+				try {
+					Listener.sendRaw("ENVOI/"+msg+"/\n");
+					messageBox.clear();
+					addUserMessage(msg, usernameLabel.getText());
+				}catch(SocketException e) {
+					showErrorDialog("Connection Error", "Your client has been disconnected !");
+
+				}
 			}
 		}
 	}
@@ -167,9 +192,8 @@ public class ChatController implements Initializable {
 	}
 
 	public void resetBoardAction() {
-		//	System.out.println("Reset board");
 		word.resetBoard();
-		currentWord.setText("");
+		Platform.runLater(() -> currentWord.setText(""));
 	}
 
 	public void sendWordAction() throws IOException {
@@ -189,18 +213,16 @@ public class ChatController implements Initializable {
 			}
 
 			Listener.sendRaw("TROUVE/"+builder.toString()+"/"+builderPos.toString());
-			addValidWord(builder.toString());
-			addInvalidWord(builder.toString());
 			word.resetBoard();
 			currentWord.setText("");
 		}
 	}
-	
+
 	public void addValidWord(String word) {
 		if(foundWords.getText()!="")foundWords.setText(foundWords.getText()+","+word);
 		else foundWords.setText(word);
 	}
-	
+
 	public void addInvalidWord(String word) {
 		if(foundInvWords.getText()!="")foundInvWords.setText(foundInvWords.getText()+","+word);
 		else foundInvWords.setText(word);
@@ -224,6 +246,16 @@ public class ChatController implements Initializable {
 		}
 	}
 
+
+	public void resetWords() {
+		Platform.runLater(() -> foundWords.setText(""));
+		Platform.runLater(() -> foundInvWords.setText(""));
+		Platform.runLater(() -> currentWord.setText(""));
+	}
+
+	public void resetRound() {
+		this.currRound=1;
+	}
 
 	public void addToChat(Message msg) {
 		Task<HBox> othersMessages = new Task<HBox>() {
@@ -330,7 +362,6 @@ public class ChatController implements Initializable {
 				//x.getChildren().add(bl6);
 				x.getChildren().addAll(profileImage, bl6);
 				//logger.debug("ONLINE USERS: " + Integer.toString(msg.getUserlist().size()));
-				setOnlineLabel(Integer.toString(onlineCpt++));
 				return x;
 			}
 		};
@@ -365,7 +396,6 @@ public class ChatController implements Initializable {
 				//				x.getChildren().add(bl6);
 				x.getChildren().addAll(bl6, profileImage);
 
-				setOnlineLabel(Integer.toString(onlineCpt++));
 				return x;
 			}
 		};
@@ -423,12 +453,8 @@ public class ChatController implements Initializable {
 			ObservableList<User> userz = FXCollections.observableList(users);
 			userList.setItems(userz);
 			userList.setCellFactory(new CellRenderer());
-			//			for (User user : users) {
-			//				System.out.println("User " + user.getName() + "added");
-			//			}
 			setNbUser(usrs.length);
 			setOnlineLabel(String.valueOf(onlineCpt));
-			//			System.out.println("Nbusers : " + onlineCpt);
 			logger.info("setUserListRaw() method Exit");
 		});
 
@@ -614,6 +640,86 @@ public class ChatController implements Initializable {
 		t.start();
 	}
 
+	public void addPrivateMessage(String msg, String receiver, String sender) {
+		Task<HBox> othersMessages = new Task<HBox>() {
+			@Override
+			public HBox call() throws Exception {
+				//	File pic = new File("src/main/resources/images/" + msg.getPicture() + ".png");
+				//	Image image = new Image(pic.toURI().toString());
+				//	ImageView profileImage = new ImageView(image);
+				//	profileImage.setFitHeight(32);
+				//	profileImage.setFitWidth(32);
+				File pic = new File("src/main/resources/images/default.png");
+				Image image = new Image(pic.toURI().toString());
+				ImageView profileImage = new ImageView(image);
+				profileImage.setFitHeight(32);
+				profileImage.setFitWidth(32);
+				BubbledLabel bl6 = new BubbledLabel();
+				//				if (msg.getType() == MessageType.VOICE){
+				//					File soundpic = new File("src/main/resources/images/sound.png");
+				//					ImageView imageview = new ImageView(new Image(soundpic.toURI().toString()));
+				//					bl6.setGraphic(imageview);
+				//					bl6.setText("Sent a voice message!");
+				//					VoicePlayback.playAudio(msg.getVoiceMsg());
+				//				}else {
+				bl6.setText(sender + ": " + msg);
+				//				}
+				bl6.setBackground(new Background(new BackgroundFill(Color.HOTPINK,null, null)));
+				HBox x = new HBox();
+				bl6.setBubbleSpec(BubbleSpec.FACE_LEFT_CENTER);
+				//x.getChildren().add(bl6);
+				x.getChildren().addAll(profileImage, bl6);
+				//logger.debug("ONLINE USERS: " + Integer.toString(msg.getUserlist().size()));
+				return x;
+			}
+		};
+
+		othersMessages.setOnSucceeded(event -> {
+			chatPane.getItems().add(othersMessages.getValue());
+		});
+
+		Task<HBox> yourMessages = new Task<HBox>() {
+			@Override
+			public HBox call() throws Exception {
+				Image image = userImageView.getImage();
+				ImageView profileImage = new ImageView(image);
+				profileImage.setFitHeight(32);
+				profileImage.setFitWidth(32);
+
+				BubbledLabel bl6 = new BubbledLabel();
+				//				if (msg.getType() == MessageType.VOICE){
+				//					File soundpic = new File("src/main/resources/images/sound.png");
+				//					bl6.setGraphic(new ImageView(new Image(soundpic.toURI().toString())));
+				//					bl6.setText("Sent a voice message!");
+				//					VoicePlayback.playAudio(msg.getVoiceMsg());
+				//				}else {
+				bl6.setText("to "+receiver+ ":" + msg);
+				//}
+				bl6.setBackground(new Background(new BackgroundFill(Color.BLUEVIOLET,
+						null, null)));
+				HBox x = new HBox();
+				x.setMaxWidth(chatPane.getWidth() - 20);
+				x.setAlignment(Pos.TOP_RIGHT);
+				bl6.setBubbleSpec(BubbleSpec.FACE_RIGHT_CENTER);
+				//				x.getChildren().add(bl6);
+				x.getChildren().addAll(bl6, profileImage);
+
+				return x;
+			}
+		};
+		yourMessages.setOnSucceeded(event -> chatPane.getItems().add(yourMessages.getValue()));
+
+		if (sender.equals(usernameLabel.getText())) {
+			Thread t2 = new Thread(yourMessages);
+			t2.setDaemon(true);
+			t2.start();
+		} else {
+			Thread t = new Thread(othersMessages);
+			t.setDaemon(true);
+			t.start();
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -756,9 +862,10 @@ public class ChatController implements Initializable {
 	}
 
 	public void initBtn(Button btn , String txt) {
-		int randomNum ;
-		randomNum = ThreadLocalRandom.current().nextInt(0, 3 + 1);
+		
+		int randomNum = ThreadLocalRandom.current().nextInt(0, 3 + 1);
 		btn.setText(txt);
+		
 		switch(randomNum) {
 		case 0:
 			btn.setRotate(0);
@@ -782,69 +889,159 @@ public class ChatController implements Initializable {
 	}
 
 	public void displaySession() {
-		gamePane.setVisible(false);
-		gamePane.setManaged(false);
-		resultPane.setVisible(false);
-		resultPane.setManaged(false);
-		sessionPane.setVisible(true);
-		sessionPane.setManaged(true);
-		MainLauncher.getPrimaryStage().setWidth(MainLauncher.getPrimaryStage().getMaxWidth());
-		MainLauncher.getPrimaryStage().setHeight(MainLauncher.getPrimaryStage().getMaxHeight());
+		Platform.runLater(() -> {
+			gamePane.setVisible(false);
+			gamePane.setManaged(false);
+			resultPane.setVisible(false);
+			resultPane.setManaged(false);
+			endPane.setVisible(false);
+			endPane.setManaged(false);
+			sessionPane.setVisible(true);
+			sessionPane.setManaged(true);
+			resize();
+		});
 	}
-	
-	public void displayResultDebug() {
-		displayResult("Hervé*12*nrez*41489*Skylab*1*hephixor*110");
-	}
-	
-public void displayGameDebug() {
-	resultPane.setVisible(false);
-	resultPane.setManaged(false);
-	sessionPane.setVisible(false);
-	sessionPane.setManaged(false);
-	gamePane.setVisible(true);
-	gamePane.setManaged(true);
-	MainLauncher.getPrimaryStage().setWidth(MainLauncher.getPrimaryStage().getMaxWidth());
-	MainLauncher.getPrimaryStage().setHeight(MainLauncher.getPrimaryStage().getMaxHeight());
-}
 
-	public void displayResult(String scores){
+	public void displayEnd(String res) {
+		Platform.runLater(() -> {
+
+			String[] infos = res.split("\\*");
+			int myScore;
+			int max=-1;
+			String winner="";
+
+			HBox winnerh = new HBox();
+			winnerh.setAlignment(Pos.CENTER);
+			Label win = new Label("THE WINNER IS ");
+			win.setId("subtitle");
+			Label winid = new Label();
+			winid.setId("subtitle");
+			winnerh.getChildren().addAll(win,winid);
+
+			fxscoresfinal.getChildren().clear();
+			fxscoresfinal.getChildren().add(winnerh);
+
+			for(int i=0;i<infos.length-1;i=i+2) {
+				if(Integer.parseInt(infos[i+1])>max) {
+					winner = infos[i];
+					max = Integer.parseInt(infos[i+1]);
+				}
+				if(infos[i].equals(usernameLabel.getText())) {
+					myScore=Integer.parseInt(infos[i+1]);
+					Label sc = new Label("YOUR SCORE  : " +infos[i+1]);
+					sc.setId("data");
+					fxscoresfinal.getChildren().add(sc);
+				}			
+			}
+
+			winid.setText(winner +" ("+max+" pts)");
+
+			for(int i=0;i<infos.length-1;i=i+2) {
+				if(infos[i].equals(usernameLabel.getText())) {
+
+				}	
+				else {
+					Label pl = new Label(infos[i] +" : " +infos[i+1]);
+					pl.setId("data");
+					fxscoresfinal.getChildren().add(pl);
+				}
+			}
+
+			gamePane.setVisible(false);
+			gamePane.setManaged(false);
+			resultPane.setVisible(false);
+			resultPane.setManaged(false);
+			sessionPane.setVisible(false);
+			sessionPane.setManaged(false);
+			endPane.setVisible(true);
+			endPane.setManaged(true);
+			resize();
+		});
+	}
+
+	public void displayGame() {
+		//Display game board
+		Platform.runLater(() -> {
+			resultPane.setVisible(false);
+			resultPane.setManaged(false);
+			sessionPane.setVisible(false);
+			sessionPane.setManaged(false);
+			endPane.setVisible(false);
+			endPane.setManaged(false);
+			gamePane.setVisible(true);
+			gamePane.setManaged(true);
+			resize();
+		});
+	}
+
+	public void displayResult(String scores, String validWords){
+		//Display result screen with players' scores
 		Platform.runLater(() -> {
 			resultPane.setVisible(true);
 			resultPane.setManaged(true);
 			sessionPane.setVisible(false);
 			sessionPane.setManaged(false);
+			endPane.setVisible(false);
+			endPane.setManaged(false);
 			gamePane.setVisible(false);
 			gamePane.setManaged(false);
-			MainLauncher.getPrimaryStage().setWidth(MainLauncher.getPrimaryStage().getMaxWidth());
-			MainLauncher.getPrimaryStage().setHeight(MainLauncher.getPrimaryStage().getMaxHeight());
-			
+			resize();
+
+			//Display valided words
+			String[] vWords = validWords.split("\\*");
+			String words = "";
+			for (String string : vWords) {
+				words+=string+",";
+			}
+			foundWordsfinal.setText(words);
+
+
+
+			//Round number display
+			Label lbl = new Label("Round "+currRound++);lbl.setId("subtitle");fxscores.getChildren().add(lbl);
+
+			//Update score des joueurs
 			String[] infos = scores.split("\\*");
-			String bs ="${'\n'}";
-			int myScore;
+			int myScore;	
+
+			//Cela eût été plus facile avec une hashmap
 			for(int i=0;i<infos.length-1;i=i+2) {
+				//Update
+				for (User us : users) {
+					if(us.getName().toUpperCase().equals(infos[i].toUpperCase())) {
+						us.setScore(us.getScore()+Integer.parseInt(infos[i+1]));
+					}
+				}
+
+				//Looking for personal score
 				if(infos[i].equals(usernameLabel.getText())) {
 					myScore=Integer.parseInt(infos[i+1]);
-					//System.out.println("My score is " + infos[i+1]);
-					//TODO changer score perso
-					fxscores.getChildren().add(new Label("Your score  : " +infos[i+1]));
+					Label sc = new Label("Your score  : " +infos[i+1]);
+					sc.setId("data");
+					fxscores.getChildren().add(sc);
 				}			
 			}
+
+			//Display aother players' score
 			for(int i=0;i<infos.length-1;i=i+2) {
 				if(infos[i].equals(usernameLabel.getText())) {
-					
+
 				}	
 				else {
-					fxscores.getChildren().add(new Label(infos[i] +" : " +infos[i+1]));
+					Label pl = new Label(infos[i] +" : " +infos[i+1]);
+					pl.setId("data");
+					fxscores.getChildren().add(pl);
 				}
 			}
-			
+
+			//Update userlist visual
+			ObservableList<User> userz = FXCollections.observableList(users);
+			userList.setItems(userz);
+			userList.setCellFactory(new CellRenderer());
+
 		});
 
 
-	}
-	
-	public void showSession() {
-		
 	}
 
 	public void showErrorDialog(String message, String content) {
@@ -862,7 +1059,13 @@ public void displayGameDebug() {
 		MainLauncher.getPrimaryStage().setWidth(MainLauncher.getPrimaryStage().getMaxWidth());
 		MainLauncher.getPrimaryStage().setHeight(MainLauncher.getPrimaryStage().getMaxHeight());
 	}
-	
+
+	public void resetScore() {
+		for (User us : users) {
+			us.setScore(0);
+		}
+	}
+
 	//	private void bindToTime(Object o) {
 	//		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0),
 	//				event -> ((Labeled) o).setText(LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME))),
@@ -871,4 +1074,5 @@ public void displayGameDebug() {
 	//		timeline.setCycleCount(Animation.INDEFINITE);
 	//		timeline.play();
 	//	}
+
 }
