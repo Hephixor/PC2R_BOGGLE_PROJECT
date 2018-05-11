@@ -6,43 +6,26 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.Socket;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.util.Duration;
 import main.client.login.LoginController;
-import main.messages.Message;
-import main.messages.MessageType;
 import main.messages.Status;
 
 public class Listener implements Runnable{
 
-	private static final String HASCONNECTED = "has connected";
-
-	private static String picture;
 	private Socket socket;
 	public String hostname;
 	public int port;
 	public static String username;
 	public ChatController controller;
-	private static ObjectOutputStream oos;
 	private InputStream is;
-	private ObjectInputStream input;
 	private static OutputStream os;
 	static Writer out;
 	BufferedReader in;
@@ -53,7 +36,6 @@ public class Listener implements Runnable{
 		this.hostname = hostname;
 		this.port = port;
 		Listener.username = username;
-		Listener.picture = picture;
 		this.controller = controller;
 	}
 
@@ -75,14 +57,9 @@ public class Listener implements Runnable{
 				logger.info("Sockets in and out ready!");
 				while (socket.isConnected()) {
 					controller.resize();
-					MessageType msgtype;
-					Message message = null;
 					String transmission = null;
 					try {
-						//message = (Message) input.readObject();
 						transmission = in.readLine();
-						Thread.sleep(250);
-
 					}
 					catch(EOFException e) {
 
@@ -92,9 +69,7 @@ public class Listener implements Runnable{
 						String[] infos;
 						logger.info("server :: "+transmission);
 						String[] parts = transmission.split("/");
-						//						for (String string : parts) {
-						//							System.out.println("part:  "+string);
-						//						}
+						
 						switch(parts[0]){
 
 						case "BIENVENUE":
@@ -113,22 +88,21 @@ public class Listener implements Runnable{
 
 							controller.setMatrix(parts[1]);
 							controller.setUserListRaw(users,scores);
-							msgtype = MessageType.CONNECTED;
-
+							controller.displayGame();
+							
 							break;
 
 						case "CONNECTE":
 							//Pour dire bonjour automatiquement
 							//controller.addUserChat("Bonjour !", parts[1]);
+							controller.addAsServer(parts[1] + " connected");
 							controller.addUserToList(parts[1]);
 							controller.newUserEntryNotification(parts[1]);
-							msgtype = MessageType.USER;
 							break;
 
 						case "DECONNEXION":
 							controller.removeUserFromList(parts[1]);
 							controller.userDisconnectedNotification(parts[1]);
-							msgtype = MessageType.DISCONNECTED;
 							//Action retrait joueur
 							break;
 
@@ -139,19 +113,18 @@ public class Listener implements Runnable{
 							break;
 
 						case "VAINQUEUR":
-							//rception scores fin
-							controller.displayEnd("Skylab*1222*macron*2");
-							//controller.displayEnd(parts[1]);
+							//reception scores fin
+							controller.displayEnd(parts[1]);
 							break;
 
 						case "TOUR":
-							//recepetion nouveau tirage
+							//reception nouveau tirage
 							controller.setMatrix(parts[1]);
 							controller.displayMatrix(true);
 							controller.resetWords();
 							controller.displayGame();
 							break;
-							
+
 						case "MVALIDE":
 							//mot proposé validé
 							controller.addValidWord(parts[1]);
@@ -170,8 +143,7 @@ public class Listener implements Runnable{
 
 						case "BILANMOTS":
 							//Résultats mots proposés
-							controller.displayResult("Skylab*120*macron*1","trotinette*roller");
-							//controller.displayResult(parts[2],parts[1]);
+							controller.displayResult(parts[2],parts[1]);
 							break;
 
 						case "RECEPTION":
@@ -194,118 +166,37 @@ public class Listener implements Runnable{
 						default:
 							logger.error("Unrecognized server command :: "+transmission);
 							break;
-
-
 						}
-
-						//						logger.debug("Message received:" + message.getMsg() + " MessageType:" + message.getType() + "Name:" + message.getName());
-						//						switch (message.getType()) {
-						//						case USER:
-						//							controller.addToChat(message);
-						//							break;
-						//						case VOICE:
-						//							controller.addToChat(message);
-						//							break;
-						//						case NOTIFICATION:
-						//							controller.newUserNotification(message);
-						//							break;
-						//						case SERVER:
-						//							controller.addAsServer(message);
-						//							break;
-						//						case CONNECTED:
-						//							System.out.println("Connected");
-						//							controller.setUserList(message);
-						//							break;
-						//						case DISCONNECTED:
-						//							controller.setUserList(message);
-						//							break;
-						//						case STATUS:
-						//							controller.setUserList(message);
-						//							break;
-						//						case MATRIX:
-						//							controller.setMatrix(message.getMsg());
-						//						}
 					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 				showErrorDialog("Connection Error", "Your client has been disconnected !");
 				controller.logoutScene();
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
 			}
 
 		} catch (IOException e) {
 			LoginController.getInstance().showErrorDialog("Could not connect to server","Please check for firewall issues and check if the server is running.");
 			logger.error("Could not Connect");
-			
 		}
-
-
 	}
-	
-	
-
 
 	public static void sendRaw(String msg) throws IOException {
 		logger.info("client :: " + msg);
-		//System.out.println("client :: "+msg);
 		out.append(msg);
 		//out.append("\n");
 		out.flush();
 	}
-	/* This method is used for sending a normal Message
-	 * @param msg - The message which the user generates
-	 */
-	public static void send(String msg) throws IOException {
-		Message createMessage = new Message();
-		createMessage.setName(username);
-		createMessage.setType(MessageType.USER);
-		createMessage.setStatus(Status.AWAY);
-		createMessage.setMsg(msg);
-		createMessage.setPicture(picture);
-		//	sendRaw("ENVOI/" + createMessage.getName()+"/"+ createMessage.getMsg()+"\n");
-		oos.writeObject(createMessage);
-		oos.flush();
-	}
 
-	/* This method is used for sending a voice Message
-	 * @param msg - The message which the user generates
-	 */
 	public static void sendVoiceMessage(byte[] audio) throws IOException {
-		Message createMessage = new Message();
-		createMessage.setName(username);
-		createMessage.setType(MessageType.VOICE);
-		createMessage.setStatus(Status.AWAY);
-		createMessage.setVoiceMsg(audio);
-		createMessage.setPicture(picture);
-		//		sendRaw("ENVOIV/" + createMessage.getName()+"/"+ "voiceMessages");
-		//		oos.writeObject(createMessage);
-		//		oos.flush();
+		sendRaw("ENVOIV/" + username+"/"+ audio+"\n");
 	}
 
-	/* This method is used for sending a normal Message
-	 * @param msg - The message which the user generates
-	 */
 	public static void sendStatusUpdate(Status status) throws IOException {
-//		Message createMessage = new Message();
-//		createMessage.setName(username);
-//		createMessage.setType(MessageType.STATUS);
-//		createMessage.setStatus(status);
-//		createMessage.setPicture(picture);
-//		oos.writeObject(createMessage);
-//		oos.flush();
 		sendRaw("STATUS/"+username+"/"+status+"\n");
 	}
 
-	/* This method is used to send a connecting message */
 	public static void connect() throws IOException {
-		//		Message createMessage = new Message();
-		//		createMessage.setName(username);
-		//		createMessage.setType(MessageType.CONNECTED);
-		//		createMessage.setMsg(HASCONNECTED);
-		//		createMessage.setPicture(picture);
-		//		oos.writeObject(createMessage);
 		sendRaw("CONNEXION/"+username+"/\n");
 	}
 
@@ -317,9 +208,6 @@ public class Listener implements Runnable{
 			alert.setContentText(content);
 			alert.showAndWait();
 		});
-
 	}
-
-
 
 }

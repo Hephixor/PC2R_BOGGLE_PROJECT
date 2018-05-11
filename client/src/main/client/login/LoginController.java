@@ -94,10 +94,7 @@ public class LoginController implements Initializable {
 	public void showScene() throws IOException {
 		Platform.runLater(() -> {
 			Stage stage = (Stage) hostnameTextfield.getScene().getWindow();
-			stage.setResizable(true);
-//			stage.setWidth(1040);
-//			stage.setHeight(620);
-
+			stage.setResizable(false);
 			stage.setOnCloseRequest((WindowEvent e) -> {
 				Platform.exit();
 				System.exit(0);
@@ -119,7 +116,6 @@ public class LoginController implements Initializable {
 		selectedPicture.textProperty().bind(imagePicker.getSelectionModel().selectedItemProperty());
 		selectedPicture.setVisible(false);
 
-		/* Drag and Drop */
 		borderPane.setOnMousePressed(event -> {
 			xOffset = MainLauncher.getPrimaryStage().getX() - event.getScreenX();
 			yOffset = MainLauncher.getPrimaryStage().getY() - event.getScreenY();
@@ -165,9 +161,6 @@ public class LoginController implements Initializable {
 	}
 
 
-	/* This method is used to generate the animation on the login window, It will generate random ints to determine
-	 * the size, speed, starting points and direction of each square.
-	 */
 	public void generateAnimation(){
 		Random rand = new Random();
 		int sizeOfSquare = rand.nextInt(50) + 1;
@@ -230,7 +223,6 @@ public class LoginController implements Initializable {
 		borderPane.getChildren().add(borderPane.getChildren().size()-1,r1);
 	}
 
-	/* Terminates Application */
 	public void closeSystem(){
 		Platform.exit();
 		System.exit(0);
@@ -248,7 +240,6 @@ public class LoginController implements Initializable {
 		portTextfield.setText(String.valueOf(port));
 	}
 
-	/* This displays an alert message to the user */
 	public void showErrorDialog(String message, String content) {
 		Platform.runLater(()-> {
 			Alert alert = new Alert(Alert.AlertType.WARNING);

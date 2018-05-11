@@ -10,11 +10,11 @@ import main.exceptions.FullWordException;
 
 public class Word {
 	private ArrayList<Character> letters;
-	private ArrayList<int[]> trail; 
+	private ArrayList<String> trail; 
 
 	public Word() {
 		this.letters = new ArrayList<Character>();
-		this.trail = new ArrayList<int[]>();
+		this.trail = new ArrayList<String>();
 	}
 
 	public void addLetter(char letter, String pos) {
@@ -23,9 +23,8 @@ public class Word {
 				throw new FullWordException("Error word is the maximum length");
 			}
 			else {
-			int[] tmp = {Character.getNumericValue(pos.charAt(0)),Character.getNumericValue(pos.charAt(1))};
 			letters.add(letter);
-			trail.add(tmp);
+			trail.add(pos);
 			}
 		} catch (FullWordException e) {
 			showErrorDialog("Invalid Move !", "Your word has reached the maximul length.");
@@ -55,7 +54,7 @@ public class Word {
 		return letters;
 	}
 	
-	public ArrayList<int[]> getTrail(){
+	public ArrayList<String> getTrail(){
 		return trail;
 	}
 
