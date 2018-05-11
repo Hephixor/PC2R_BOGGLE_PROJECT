@@ -39,13 +39,11 @@ import main.client.chatwindow.Listener;
 import main.client.util.ResizeHelper;
 import main.exceptions.EmptyNameException;
 
-/**
- *  Created by Dominic on 12-Nov-15.
- */
+
 public class LoginController implements Initializable {
 	@FXML private ImageView Defaultview;
-	@FXML private ImageView Sarahview;
-	@FXML private ImageView Dominicview;
+	@FXML private ImageView womanview;
+	@FXML private ImageView manview;
 	@FXML public  TextField hostnameTextfield;
 	@FXML private TextField portTextfield;
 	@FXML private TextField usernameTextfield;
@@ -57,7 +55,7 @@ public class LoginController implements Initializable {
 	private double yOffset;
 	private Scene scene;
 	Logger logger = LoggerFactory.getLogger(Listener.class);
-	
+
 	private static LoginController instance;
 
 	public LoginController() {
@@ -77,7 +75,6 @@ public class LoginController implements Initializable {
 				int port = Integer.parseInt(portTextfield.getText());
 				String username = usernameTextfield.getText();
 				String picture = selectedPicture.getText();
-				//System.out.println("pix " + selectedPicture.getText());
 				URL fxml = new File("src/main/resources/views/ChatView.fxml").toURI().toURL();
 				FXMLLoader fmxlLoader = new FXMLLoader(fxml);
 				Parent window = (Pane) fmxlLoader.load();
@@ -242,11 +239,11 @@ public class LoginController implements Initializable {
 	public void minimizeWindow(){
 		MainLauncher.getPrimaryStage().setIconified(true);
 	}
-	
+
 	public void setHost(String host){
 		hostnameTextfield.setText(host);
 	}
-	
+
 	public void setPort(int port){
 		portTextfield.setText(String.valueOf(port));
 	}

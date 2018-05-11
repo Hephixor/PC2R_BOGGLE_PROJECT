@@ -59,7 +59,6 @@ public class Word {
 		return trail;
 	}
 
-		/* This displays an alert message to the user */
 		public void showErrorDialog(String message, String content) {
 			Platform.runLater(()-> {
 				Alert alert = new Alert(Alert.AlertType.WARNING);

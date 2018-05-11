@@ -298,11 +298,11 @@
     </VBox>
   </left>
   <top>
-    <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #4b0608;" BorderPane.alignment="CENTER">
+    <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #1b6698;" BorderPane.alignment="CENTER">
       <center>
         <ImageView fitHeight="79.0" fitWidth="522.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
           <image>
-            <Image url="@../images/boggle.png" />
+            <Image url="@../images/logo.png" />
           </image>
           <BorderPane.margin>
             <Insets right="100.0" />
@@ -314,7 +314,7 @@
           <children>
             <ImageView fitHeight="23.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="button">
               <image>
-                <Image url="@../images/settings.png" />
+
               </image>
               <HBox.margin>
                 <Insets right="30.0" top="30.0" />

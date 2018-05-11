@@ -288,13 +288,13 @@ public class Listener implements Runnable{
 	 * @param msg - The message which the user generates
 	 */
 	public static void sendStatusUpdate(Status status) throws IOException {
-		Message createMessage = new Message();
-		createMessage.setName(username);
-		createMessage.setType(MessageType.STATUS);
-		createMessage.setStatus(status);
-		createMessage.setPicture(picture);
-		oos.writeObject(createMessage);
-		oos.flush();
+//		Message createMessage = new Message();
+//		createMessage.setName(username);
+//		createMessage.setType(MessageType.STATUS);
+//		createMessage.setStatus(status);
+//		createMessage.setPicture(picture);
+//		oos.writeObject(createMessage);
+//		oos.flush();
 		sendRaw("STATUS/"+username+"/"+status+"\n");
 	}
 

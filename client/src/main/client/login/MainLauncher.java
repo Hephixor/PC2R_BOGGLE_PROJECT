@@ -30,7 +30,7 @@ public class MainLauncher extends Application {
 		primaryStage.initStyle(StageStyle.UNDECORATED);
 		primaryStage.setTitle("Boggle is life");
 		
-		File img = new File("src/main/resources/images/plug.png");
+		File img = new File("src/main/resources/images/dice.png");
 		primaryStage.getIcons().add(new Image(img.toURI().toString()));
 		
 		Scene mainScene = new Scene(root,350, 420);

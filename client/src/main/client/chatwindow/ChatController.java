@@ -75,34 +75,32 @@ public class ChatController implements Initializable {
 	@FXML private ListView<User> userList;
 	@FXML private ImageView userImageView;
 	@FXML private Button recordBtn;
-	@FXML ListView chatPane;
-	@FXML ListView statusList;
-	@FXML BorderPane borderPane;
-	@FXML ComboBox statusComboBox;
-	@FXML ImageView microphoneImageView;
-	@FXML Button letter1;
-	@FXML Button letter2,letter3,letter4,letter5,letter6,letter7,letter8,letter9,letter10,letter11,letter12,letter13,letter14,letter15,letter16;
-	@FXML Label foundWords;
-	@FXML Label foundWordsfinal;
-	@FXML Label foundInvWords;
-	@FXML VBox gamePane;
-	@FXML VBox resultPane;
-	@FXML VBox sessionPane;
-	@FXML VBox endPane;
-	@FXML VBox fxscores;
-	@FXML VBox fxscoresfinal;
+	@FXML private ListView chatPane;
+	@FXML private ListView statusList;
+	@FXML private BorderPane borderPane;
+	@FXML private ComboBox statusComboBox;
+	@FXML private ImageView microphoneImageView;
+	@FXML private Button letter1, letter2,letter3,letter4,letter5,letter6,letter7,letter8,letter9,letter10,letter11,letter12,letter13,letter14,letter15,letter16;
+	@FXML private Label foundWords;
+	@FXML private Label foundWordsfinal;
+	@FXML private Label foundInvWords;
+	@FXML private VBox gamePane;
+	@FXML private VBox resultPane;
+	@FXML private VBox sessionPane;
+	@FXML private VBox endPane;
+	@FXML private VBox fxscores;
+	@FXML private VBox fxscoresfinal;
 
 	private int onlineCpt;
 	private int currRound;
 	private ArrayList<User> users;
-
 	Word word = new Word();
 
-	File imgMicrophoneActive = new File("src/main/resources/images/microphone-active.png");
-	File imgMicrophone = new File("src/main/resources/images/microphone.png");
+	private File imgMicrophoneActive = new File("src/main/resources/images/microphone-active.png");
+	private File imgMicrophone = new File("src/main/resources/images/microphone.png");
 
-	Image microphoneActiveImage = new Image(imgMicrophoneActive.toURI().toString());
-	Image microphoneInactiveImage = new Image(imgMicrophone.toURI().toString());
+	private Image microphoneActiveImage = new Image(imgMicrophoneActive.toURI().toString());
+	private Image microphoneInactiveImage = new Image(imgMicrophone.toURI().toString());
 
 	private double xOffset;
 	private double yOffset;
@@ -112,55 +110,45 @@ public class ChatController implements Initializable {
 		return this.users;
 	}
 
-	//	public void sendButtonAction() throws IOException {
-	//		String msg = messageBox.getText();
-	//		if (!messageBox.getText().isEmpty()) {
-	//			try {
-	//				Listener.send(msg);
-	//				messageBox.clear();
-	//			}catch(SocketException e) {
-	//				showErrorDialog("Connection Error", "Your client has been disconnected !");
-	//
-	//			}
-	//		}
-	//	}
-
 	public void sendButtonAction() throws IOException {
 		String msg = messageBox.getText();
-		if (!messageBox.getText().isEmpty()) {
 
+		if (!messageBox.getText().isEmpty()) {
 			if(msg.charAt(0)=='/' && msg.charAt(1)=='w') {
+
 				String[] infos = msg.split(" ");
 				String receiver = infos[1];
 				String message="";
+
 				for(int i = 2 ; i < infos.length;i++) {
 					message+=infos[i]+" ";
 				}
-				System.out.println("client : PENVOI/"+receiver+"/"+message);
+
 				try {
 					Listener.sendRaw("PENVOI/"+receiver+"/"+message+"/\n");
 					messageBox.clear();
 					addPrivateMessage(message, receiver, usernameLabel.getText());
-				}catch(SocketException e) {
+				}
+				catch(SocketException e) {
 					showErrorDialog("Connection Error", "Your client has been disconnected !");
-
 				}
 			}
 
 			else {
 				try {
 					Listener.sendRaw("ENVOI/"+msg+"/\n");
-					messageBox.clear();
 					addUserMessage(msg, usernameLabel.getText());
-				}catch(SocketException e) {
+					messageBox.clear();
+				}
+				catch(SocketException e) {
 					showErrorDialog("Connection Error", "Your client has been disconnected !");
-
 				}
 			}
 		}
 	}
 
 	public void addLetterAction(ActionEvent event){
+		//Add the selected letter to the current word
 		Node node = (Node) event.getSource();
 		String pos = (String) node.getUserData();
 		Button pressed = (Button) event.getSource();
@@ -168,35 +156,35 @@ public class ChatController implements Initializable {
 		if(pressed.getText()!=""){
 			char letter = pressed.getText().charAt(0);
 			StringBuilder builder = new StringBuilder(word.getLetters().size());
-			word.addLetter(letter,pos);  
+			word.addLetter(letter,pos);
 
 			for(Character ch: word.getLetters())
 			{
 				builder.append(ch);
 			}
-
 			currentWord.setText(builder.toString());
 		}
 	}
 
 	public void removeLetterAction() {
-		//	System.out.println("Removing letter");
+		//remove last chosed letter
+		StringBuilder builder = new StringBuilder(word.getLetters().size());
 		word.removeLetter();
-		StringBuilder builder = new StringBuilder(word.getLetters().size());	
 		for(Character ch: word.getLetters())
 		{
 			builder.append(ch);
-		}	
-
+		}
 		currentWord.setText( builder.toString());
 	}
 
 	public void resetBoardAction() {
+		//Reset the currentWord
 		word.resetBoard();
 		Platform.runLater(() -> currentWord.setText(""));
 	}
 
 	public void sendWordAction() throws IOException {
+		//Submit the current word to the server with the positions of letters
 		if(word.getLetters().size()!=0) {
 			StringBuilder builder = new StringBuilder(word.getLetters().size());
 			StringBuilder builderPos = new StringBuilder(word.getLetters().size());
@@ -219,17 +207,20 @@ public class ChatController implements Initializable {
 	}
 
 	public void addValidWord(String word) {
+		//Add a word the valid list
 		if(foundWords.getText()!="")foundWords.setText(foundWords.getText()+","+word);
 		else foundWords.setText(word);
 	}
 
 	public void addInvalidWord(String word) {
+		//Add a word the invalid list
 		if(foundInvWords.getText()!="")foundInvWords.setText(foundInvWords.getText()+","+word);
 		else foundInvWords.setText(word);
 	}
 
 
 	public void recordVoiceMessage() throws IOException {
+		//Experimental
 		if (VoiceUtil.isRecording()) {
 			Platform.runLater(() -> {
 				microphoneImageView.setImage(microphoneInactiveImage);
@@ -248,91 +239,21 @@ public class ChatController implements Initializable {
 
 
 	public void resetWords() {
+		//Reset all words for a new game round
 		Platform.runLater(() -> foundWords.setText(""));
 		Platform.runLater(() -> foundInvWords.setText(""));
 		Platform.runLater(() -> currentWord.setText(""));
 	}
 
 	public void resetRound() {
+		//Use at the beginning of a session
 		this.currRound=1;
 	}
 
-	public void addToChat(Message msg) {
-		Task<HBox> othersMessages = new Task<HBox>() {
-			@Override
-			public HBox call() throws Exception {
-				File pic = new File("src/main/resources/images/" + msg.getPicture() + ".png");
-				Image image = new Image(pic.toURI().toString());
-				ImageView profileImage = new ImageView(image);
-				profileImage.setFitHeight(32);
-				profileImage.setFitWidth(32);
-				BubbledLabel bl6 = new BubbledLabel();
-				if (msg.getType() == MessageType.VOICE){
-					File soundpic = new File("src/main/resources/images/sound.png");
-					ImageView imageview = new ImageView(new Image(soundpic.toURI().toString()));
-					bl6.setGraphic(imageview);
-					bl6.setText("Sent a voice message!");
-					VoicePlayback.playAudio(msg.getVoiceMsg());
-				}else {
-					bl6.setText(msg.getName() + ": " + msg.getMsg());
-				}
-				bl6.setBackground(new Background(new BackgroundFill(Color.WHITE,null, null)));
-				HBox x = new HBox();
-				bl6.setBubbleSpec(BubbleSpec.FACE_LEFT_CENTER);
-				x.getChildren().addAll(profileImage, bl6);
-				logger.debug("ONLINE USERS: " + Integer.toString(msg.getUserlist().size()));
-				setOnlineLabel(Integer.toString(msg.getOnlineCount()));
-				return x;
-			}
-		};
-
-		othersMessages.setOnSucceeded(event -> {
-			chatPane.getItems().add(othersMessages.getValue());
-		});
-
-		Task<HBox> yourMessages = new Task<HBox>() {
-			@Override
-			public HBox call() throws Exception {
-				Image image = userImageView.getImage();
-				ImageView profileImage = new ImageView(image);
-				profileImage.setFitHeight(32);
-				profileImage.setFitWidth(32);
-
-				BubbledLabel bl6 = new BubbledLabel();
-				if (msg.getType() == MessageType.VOICE){
-					File soundpic = new File("src/main/resources/images/sound.png");
-					bl6.setGraphic(new ImageView(new Image(soundpic.toURI().toString())));
-					bl6.setText("Sent a voice message!");
-					VoicePlayback.playAudio(msg.getVoiceMsg());
-				}else {
-					bl6.setText(msg.getMsg());
-				}
-				bl6.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN,
-						null, null)));
-				HBox x = new HBox();
-				x.setMaxWidth(chatPane.getWidth() - 20);
-				x.setAlignment(Pos.TOP_RIGHT);
-				bl6.setBubbleSpec(BubbleSpec.FACE_RIGHT_CENTER);
-				x.getChildren().addAll(bl6, profileImage);
-
-				setOnlineLabel(Integer.toString(msg.getOnlineCount()));
-				return x;
-			}
-		};
-		yourMessages.setOnSucceeded(event -> chatPane.getItems().add(yourMessages.getValue()));
-
-		if (msg.getName().equals(usernameLabel.getText())) {
-			Thread t2 = new Thread(yourMessages);
-			t2.setDaemon(true);
-			t2.start();
-		} else {
-			Thread t = new Thread(othersMessages);
-			t.setDaemon(true);
-			t.start();
-		}
-	}
-
 	public void addUserMessage(String msg, String user) {
+		//Add a user message to chat
+
+		//If the message comes from anyone but yourself
 		Task<HBox> othersMessages = new Task<HBox>() {
 			@Override
 			public HBox call() throws Exception {
@@ -347,6 +268,8 @@ public class ChatController implements Initializable {
 				profileImage.setFitHeight(32);
 				profileImage.setFitWidth(32);
 				BubbledLabel bl6 = new BubbledLabel();
+
+				//Experimental
 				//				if (msg.getType() == MessageType.VOICE){
 				//					File soundpic = new File("src/main/resources/images/sound.png");
 				//					ImageView imageview = new ImageView(new Image(soundpic.toURI().toString()));
@@ -359,7 +282,6 @@ public class ChatController implements Initializable {
 				bl6.setBackground(new Background(new BackgroundFill(Color.GREY,null, null)));
 				HBox x = new HBox();
 				bl6.setBubbleSpec(BubbleSpec.FACE_LEFT_CENTER);
-				//x.getChildren().add(bl6);
 				x.getChildren().addAll(profileImage, bl6);
 				//logger.debug("ONLINE USERS: " + Integer.toString(msg.getUserlist().size()));
 				return x;
@@ -370,6 +292,7 @@ public class ChatController implements Initializable {
 			chatPane.getItems().add(othersMessages.getValue());
 		});
 
+		//If the message comes from yourself
 		Task<HBox> yourMessages = new Task<HBox>() {
 			@Override
 			public HBox call() throws Exception {
@@ -379,6 +302,7 @@ public class ChatController implements Initializable {
 				profileImage.setFitWidth(32);
 
 				BubbledLabel bl6 = new BubbledLabel();
+				//Experimental
 				//				if (msg.getType() == MessageType.VOICE){
 				//					File soundpic = new File("src/main/resources/images/sound.png");
 				//					bl6.setGraphic(new ImageView(new Image(soundpic.toURI().toString())));
@@ -393,8 +317,7 @@ public class ChatController implements Initializable {
 				x.setMaxWidth(chatPane.getWidth() - 20);
 				x.setAlignment(Pos.TOP_RIGHT);
 				bl6.setBubbleSpec(BubbleSpec.FACE_RIGHT_CENTER);
-				//				x.getChildren().add(bl6);
-				x.getChildren().addAll(bl6, profileImage);
+  			x.getChildren().addAll(bl6, profileImage);
 
 				return x;
 			}
@@ -413,32 +336,25 @@ public class ChatController implements Initializable {
 	}
 
 	public void setUsernameLabel(String username) {
+		//Changes display of username
 		Platform.runLater(() -> usernameLabel.setText(username));
 	}
 
 	public void setImageLabel() throws IOException {
+		//Experimental
+		//Changes display of user image
 		File img = new File("src/main/resources/images/Default.png");
 		Platform.runLater(() -> userImageView.setImage(new Image(img.toURI().toString())));
-
 	}
 
 	public void setOnlineLabel(String usercount) {
+		//Change display of the number of user
 		Platform.runLater(() -> onlineCountLabel.setText(usercount));
 	}
 
-	public void setUserList(Message msg) {
-		logger.info("setUserList() method Enter");
-		Platform.runLater(() -> {
-			ObservableList<User> users = FXCollections.observableList(msg.getUsers());
-			userList.setItems(users);
-			userList.setCellFactory(new CellRenderer());
-			setOnlineLabel(String.valueOf(msg.getUserlist().size()));
-		});
-		logger.info("setUserList() method Exit");
-	}
-
 	public void setUserListRaw(String[] usrs, int[] scores) {
-		logger.info("setUserListRaw() method Enter");
+		//Change display of userlist
+	//	logger.info("setUserListRaw() method Enter");
 		Platform.runLater(() -> {
 			users = new ArrayList<User>();
 			for(int i = 0 ; i < usrs.length; i++) {
@@ -450,17 +366,19 @@ public class ChatController implements Initializable {
 				users.add(usr);
 			}
 
+			//Refresh list
 			ObservableList<User> userz = FXCollections.observableList(users);
 			userList.setItems(userz);
 			userList.setCellFactory(new CellRenderer());
 			setNbUser(usrs.length);
 			setOnlineLabel(String.valueOf(onlineCpt));
-			logger.info("setUserListRaw() method Exit");
+	//		logger.info("setUserListRaw() method Exit");
 		});
 
 	}
 
 	public void updateUserStatus(String name, String status) {
+		//Experimental
 		Platform.runLater(() -> {
 
 			for (User user : users) {
@@ -485,6 +403,7 @@ public class ChatController implements Initializable {
 				}
 			}
 
+			//Refresh status
 			ObservableList<User> userz = FXCollections.observableList(users);
 			userList.setItems(userz);
 			userList.setCellFactory(new CellRenderer());
@@ -494,6 +413,7 @@ public class ChatController implements Initializable {
 	}
 
 	public void addUserToList(String s) {
+		//Add a new user the list view
 		Platform.runLater(() -> {
 			User newbie = new User();
 			newbie.setName(s);
@@ -502,54 +422,33 @@ public class ChatController implements Initializable {
 			newbie.setPicture("Default");
 
 			users.add(newbie);
+			//Refresh view
 			ObservableList<User> userz = FXCollections.observableList(users);
 			userList.setItems(userz);
 			userList.setCellFactory(new CellRenderer());
 
+			//Refresh user count
 			setOnlineLabel(String.valueOf(users.size()));
 
 		});
 	}
 
 	public void removeUserFromList(String s) {
+		//Delete a user from list view
 		Platform.runLater(() -> {
-
 			users = (ArrayList<User>) users.stream().filter(pulse -> pulse.getName().equals(s)).collect(Collectors.toList());
+			//Refresh list
 			ObservableList<User> userz = FXCollections.observableList(users);
 			userList.setItems(userz);
 			userList.setCellFactory(new CellRenderer());
-
+			//Refresh number of online users
 			setOnlineLabel(String.valueOf(users.size()));
 
 		});
 	}
 
-	/* Displays Notification when a user joins */
-	public void newUserNotification(Message msg) {
-		Platform.runLater(() -> {
-			//	File img = new File("src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
-			File img = new File("src/main/resources/images/default.png");
-			Image profileImg = new Image(img.toURI().toString(),50,50,false,false);
-			TrayNotification tray = new TrayNotification();
-			tray.setTitle("A new user has joined!");
-			tray.setMessage(msg.getName() + " has joined your Boggle room");
-			tray.setRectangleFill(Paint.valueOf("#3498db"));
-			tray.setAnimationType(AnimationType.POPUP);
-			tray.setImage(profileImg);
-			tray.showAndDismiss(Duration.seconds(5));
-			try {
-				File hitFile = new File("src/main/resources/sounds/notification.wav");
-				Media hit = new Media(hitFile.toURI().toString());
-				MediaPlayer mediaPlayer = new MediaPlayer(hit);
-				mediaPlayer.play();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		});
-	}
-
 	public void newUserEntryNotification(String username) {
+		// Displays Notification when a user joins
 		Platform.runLater(() -> {
 			//	File img = new File("src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
 			File img = new File("src/main/resources/images/default.png");
@@ -574,6 +473,7 @@ public class ChatController implements Initializable {
 	}
 
 	public void userDisconnectedNotification(String username) {
+		// Displays Notification when a user leaves
 		Platform.runLater(() -> {
 			//	File img = new File("src/main/resources/images/" + msg.getPicture().toLowerCase() +".png");
 			File img = new File("src/main/resources/images/default.png");
@@ -597,6 +497,7 @@ public class ChatController implements Initializable {
 		});
 	}
 
+	//Wrapper for enter key in chat
 	public void sendMethod(KeyEvent event) throws IOException {
 		if (event.getCode() == KeyCode.ENTER) {
 			sendButtonAction();
@@ -605,6 +506,7 @@ public class ChatController implements Initializable {
 
 	@FXML
 	public void closeApplication() {
+		//When clicking on the cross
 		try {
 			Listener.sendRaw("SORT/"+Listener.username+"/\n");
 		} catch (IOException e) {
@@ -615,8 +517,8 @@ public class ChatController implements Initializable {
 		System.exit(0);
 	}
 
-	/* Method to display server messages */
 	public void addAsServer(Message msg) {
+		//Method to display server messages
 		Task<HBox> task = new Task<HBox>() {
 			@Override
 			public HBox call() throws Exception {
@@ -641,6 +543,7 @@ public class ChatController implements Initializable {
 	}
 
 	public void addPrivateMessage(String msg, String receiver, String sender) {
+		//Same as add regular messages, with different colors and layouts;
 		Task<HBox> othersMessages = new Task<HBox>() {
 			@Override
 			public HBox call() throws Exception {
@@ -667,7 +570,6 @@ public class ChatController implements Initializable {
 				bl6.setBackground(new Background(new BackgroundFill(Color.HOTPINK,null, null)));
 				HBox x = new HBox();
 				bl6.setBubbleSpec(BubbleSpec.FACE_LEFT_CENTER);
-				//x.getChildren().add(bl6);
 				x.getChildren().addAll(profileImage, bl6);
 				//logger.debug("ONLINE USERS: " + Integer.toString(msg.getUserlist().size()));
 				return x;
@@ -701,7 +603,6 @@ public class ChatController implements Initializable {
 				x.setMaxWidth(chatPane.getWidth() - 20);
 				x.setAlignment(Pos.TOP_RIGHT);
 				bl6.setBubbleSpec(BubbleSpec.FACE_RIGHT_CENTER);
-				//				x.getChildren().add(bl6);
 				x.getChildren().addAll(bl6, profileImage);
 
 				return x;
@@ -755,8 +656,8 @@ public class ChatController implements Initializable {
 			}
 		});
 
-		/* Added to prevent the enter from adding a new line to inputMessageBox */
 		messageBox.addEventFilter(KeyEvent.KEY_PRESSED, ke -> {
+			//prevents the enter key from adding a new line to inputMessageBox
 			if (ke.getCode().equals(KeyCode.ENTER)) {
 				try {
 					sendButtonAction();
@@ -766,23 +667,22 @@ public class ChatController implements Initializable {
 				ke.consume();
 			}
 		});
-
 	}
 
 	public void setImageLabel(String selectedPicture) {
+		//Experimental
 		File userImage;
 		switch (selectedPicture) {
-		case "Dominic":
-			userImage = new File("src/main/resources/images/Dominic.png");
+		case "man":
+			userImage = new File("src/main/resources/images/man.png");
 			this.userImageView.setImage(new Image(userImage.toURI().toString()));
 			break;
-		case "Sarah":
-			userImage = new File("src/main/resources/images/sarah.png");
+		case "woman":
+			userImage = new File("src/main/resources/images/woman.png");
 			this.userImageView.setImage(new Image(userImage.toURI().toString()));
 			break;
 		case "Default":
 			userImage = new File("src/main/resources/images/default.png");
-			//System.out.println(userImage.getAbsolutePath());
 			this.userImageView.setImage(new Image(userImage.toURI().toString()));
 			break;
 		}
@@ -795,7 +695,7 @@ public class ChatController implements Initializable {
 				fxmll = new File("src/main/resources/views/LoginView.fxml").toURI().toURL();
 			} catch (MalformedURLException e1) {
 				e1.printStackTrace();
-			}    
+			}
 
 			FXMLLoader fmxlLoader = new FXMLLoader(fxmll);
 			Parent window = null;
@@ -862,10 +762,10 @@ public class ChatController implements Initializable {
 	}
 
 	public void initBtn(Button btn , String txt) {
-		
+
 		int randomNum = ThreadLocalRandom.current().nextInt(0, 3 + 1);
 		btn.setText(txt);
-		
+
 		switch(randomNum) {
 		case 0:
 			btn.setRotate(0);
@@ -931,7 +831,7 @@ public class ChatController implements Initializable {
 					Label sc = new Label("YOUR SCORE  : " +infos[i+1]);
 					sc.setId("data");
 					fxscoresfinal.getChildren().add(sc);
-				}			
+				}
 			}
 
 			winid.setText(winner +" ("+max+" pts)");
@@ -939,7 +839,7 @@ public class ChatController implements Initializable {
 			for(int i=0;i<infos.length-1;i=i+2) {
 				if(infos[i].equals(usernameLabel.getText())) {
 
-				}	
+				}
 				else {
 					Label pl = new Label(infos[i] +" : " +infos[i+1]);
 					pl.setId("data");
@@ -1002,7 +902,7 @@ public class ChatController implements Initializable {
 
 			//Update score des joueurs
 			String[] infos = scores.split("\\*");
-			int myScore;	
+			int myScore;
 
 			//Cela eût été plus facile avec une hashmap
 			for(int i=0;i<infos.length-1;i=i+2) {
@@ -1019,14 +919,14 @@ public class ChatController implements Initializable {
 					Label sc = new Label("Your score  : " +infos[i+1]);
 					sc.setId("data");
 					fxscores.getChildren().add(sc);
-				}			
+				}
 			}
 
 			//Display aother players' score
 			for(int i=0;i<infos.length-1;i=i+2) {
 				if(infos[i].equals(usernameLabel.getText())) {
 
-				}	
+				}
 				else {
 					Label pl = new Label(infos[i] +" : " +infos[i+1]);
 					pl.setId("data");
@@ -1064,6 +964,10 @@ public class ChatController implements Initializable {
 		for (User us : users) {
 			us.setScore(0);
 		}
+	}
+
+	public void setCurrentWord(String string) {
+		Platform.runLater(()-> currentWord.setText(string));;
 	}
 
 	//	private void bindToTime(Object o) {

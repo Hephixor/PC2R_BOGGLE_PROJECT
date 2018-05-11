@@ -44,14 +44,14 @@
                         <Image url="@../images/default.png" />
                      </image>
                   </ImageView>
-                  <ImageView fx:id="Sarahview" fitHeight="93.0" fitWidth="124.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                  <ImageView fx:id="womanview" fitHeight="93.0" fitWidth="124.0" pickOnBounds="true" preserveRatio="true" visible="false">
                      <image>
-                        <Image preserveRatio="false" smooth="false" url="@../images/sarah.png" />
+                        <Image preserveRatio="false" smooth="false" url="@../images/woman.png" />
                      </image>
                   </ImageView>
-                  <ImageView fx:id="Dominicview" fitHeight="93.0" fitWidth="124.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                  <ImageView fx:id="manview" fitHeight="93.0" fitWidth="124.0" pickOnBounds="true" preserveRatio="true" visible="false">
                      <image>
-                        <Image preserveRatio="false" smooth="true" url="@../images/Dominic.png" />
+                        <Image preserveRatio="false" smooth="true" url="@../images/man.png" />
                      </image>
                   </ImageView>
                </children>
@@ -60,8 +60,8 @@
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="Default" />
-                     <!-- <String fx:value="Dominic" />
-                     <String fx:value="Sarah" /> -->
+                     <String fx:value="man" />
+                     <String fx:value="woman" /> 
                   </FXCollections>
                </items>
                     </ChoiceBox>
