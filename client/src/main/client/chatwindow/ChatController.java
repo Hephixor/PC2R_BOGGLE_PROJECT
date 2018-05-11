@@ -935,8 +935,11 @@ public class ChatController implements Initializable {
 	}
 
 	public void resize() {
-		MainLauncher.getPrimaryStage().setWidth(MainLauncher.getPrimaryStage().getMaxWidth());
-		MainLauncher.getPrimaryStage().setHeight(MainLauncher.getPrimaryStage().getMaxHeight());
+//		MainLauncher.getPrimaryStage().setWidth(MainLauncher.getPrimaryStage().getMaxWidth());
+	//	MainLauncher.getPrimaryStage().setHeight(MainLauncher.getPrimaryStage().getMaxHeight());
+	//	MainLauncher.getPrimaryStage().setMaximized(true);
+		MainLauncher.getPrimaryStage().setHeight(700);
+		MainLauncher.getPrimaryStage().setWidth(1200);
 	}
 
 	public void resetScore() {
