@@ -35,7 +35,7 @@
             <Label text="Port: " alignment="CENTER" textFill="#3498DB" GridPane.rowIndex="6" />
             <TextField fx:id="portTextfield" prefHeight="13.0" prefWidth="149.0" text="2018" GridPane.columnIndex="1" GridPane.rowIndex="6" />
             <Label text="Username: " textFill="#3498DB" GridPane.rowIndex="3" />
-            <TextField fx:id="usernameTextfield" GridPane.columnIndex="1" GridPane.rowIndex="3" text="Skylab"/>
+            <TextField fx:id="usernameTextfield" GridPane.columnIndex="1" GridPane.rowIndex="3" text=""/>
             <Label prefHeight="22.0" prefWidth="90.0" text="Game Server" textFill="#3498DB" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <StackPane GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
@@ -61,7 +61,7 @@
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="Default" />
                      <String fx:value="man" />
-                     <String fx:value="woman" /> 
+                     <String fx:value="woman" />
                   </FXCollections>
                </items>
                     </ChoiceBox>
