@@ -69,9 +69,9 @@ public class Listener implements Runnable{
 						String[] infos;
 						logger.info("server :: "+transmission);
 						String[] parts = transmission.split("/");
-						
+						logger.debug("mode :" +parts[0]);
 						switch(parts[0]){
-
+					
 						case "BIENVENUE":
 							infos = parts[2].split("\\*");
 							nbTours =  Integer.parseInt(infos[0]);
@@ -108,8 +108,8 @@ public class Listener implements Runnable{
 
 						case "SESSION":
 							//debut session
-							controller.displaySession();
 							controller.resetScore();
+							controller.displaySession();
 							break;
 
 						case "VAINQUEUR":

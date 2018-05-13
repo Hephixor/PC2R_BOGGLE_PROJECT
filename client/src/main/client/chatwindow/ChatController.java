@@ -211,7 +211,8 @@ public class ChatController implements Initializable {
 	public void addInvalidWord(String res) {
 		Platform.runLater(() -> {
 		String r;
-		if(res.charAt(0)=='P') r="invalid position";
+		if(res.charAt(0)=='P' && res.charAt(1) == 'O') r="invalid position";
+		else if(res.charAt(0)=='P' && res.charAt(1) == 'R') r="already submitted";
 		else if(res.charAt(0)=='D') r="inexsitant word";
 		else r="unknow reason";
 		if(foundInvWords.getText()!="")foundInvWords.setText(foundInvWords.getText()+","+lastWord+" ("+r+")");
@@ -239,9 +240,12 @@ public class ChatController implements Initializable {
 
 
 	public void resetWords() {
-		Platform.runLater(() -> foundWords.setText(""));
-		Platform.runLater(() -> foundInvWords.setText(""));
-		Platform.runLater(() -> currentWord.setText(""));
+		word.resetBoard();
+		Platform.runLater(()-> {	
+		foundWords.setText("");
+		foundInvWords.setText("");
+		currentWord.setText("");
+		});
 	}
 
 	public void resetRound() {
@@ -345,7 +349,7 @@ public class ChatController implements Initializable {
 	}
 
 	public void setUserListRaw(String[] usrs, int[] scores) {
-		logger.info("setUserListRaw() method Enter");
+		//logger.debug("setUserListRaw() method Enter");
 		Platform.runLater(() -> {
 			users = new ArrayList<User>();
 			for(int i = 0 ; i < usrs.length; i++) {
@@ -362,7 +366,7 @@ public class ChatController implements Initializable {
 			userList.setCellFactory(new CellRenderer());
 			setNbUser(usrs.length);
 			setOnlineLabel(String.valueOf(onlineCpt));
-			logger.info("setUserListRaw() method Exit");
+			//logger.debug("setUserListRaw() method Exit");
 		});
 
 	}
@@ -803,7 +807,7 @@ public class ChatController implements Initializable {
 
 			fxscoresfinal.getChildren().clear();
 			fxscoresfinal.getChildren().add(winnerh);
-
+			
 			for(int i=1;i<infos.length-1;i=i+2) {
 				if(Integer.parseInt(infos[i+1])>max) {
 					winner = infos[i];
@@ -948,10 +952,19 @@ public class ChatController implements Initializable {
 		for (User us : users) {
 			us.setScore(0);
 		}
+		
+		//Update view
+		Platform.runLater(()-> {
+		ObservableList<User> userz = FXCollections.observableList(users);
+		userList.setItems(userz);
+		userList.setCellFactory(new CellRenderer());
+		});
+		
+	
 	}
 
 	public void setCurrentWord(String string) {
-		Platform.runLater(()-> currentWord.setText(string));;
+		Platform.runLater(()-> currentWord.setText(string));
 	}
 
 	//	private void bindToTime(Object o) {
