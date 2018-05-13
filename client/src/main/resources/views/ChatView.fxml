@@ -163,7 +163,6 @@
               <HBox alignment="CENTER">
                 <children>
                   <Label fx:id="currentWord" id="title" text=""/>
-                  <Button onAction="#displaySession" text="sfze" />
                 </children>
               </HBox>
             </VBox>

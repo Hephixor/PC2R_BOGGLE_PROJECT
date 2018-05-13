@@ -2,7 +2,7 @@
 
 Compiler les sources avec la commande 
 ```
-ant build
+ant create_jar
 ```
 
 Lancer l'exécution du programme avec

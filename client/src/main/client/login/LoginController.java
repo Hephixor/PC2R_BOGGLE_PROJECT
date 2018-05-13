@@ -73,7 +73,7 @@ public class LoginController implements Initializable {
 			else {
 				String hostname = hostnameTextfield.getText();
 				int port = Integer.parseInt(portTextfield.getText());
-				String username = usernameTextfield.getText();
+				String username = String.valueOf(usernameTextfield.getText());
 				String picture = selectedPicture.getText();
 				URL fxml = new File("src/main/resources/views/ChatView.fxml").toURI().toURL();
 				FXMLLoader fmxlLoader = new FXMLLoader(fxml);
